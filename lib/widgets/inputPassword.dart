@@ -1,6 +1,6 @@
 import '../Utils/export.dart';
 
-class InputRegister extends StatelessWidget {
+class InputPassword extends StatelessWidget {
 
   final TextEditingController controller;
   final String hint;
@@ -11,8 +11,10 @@ class InputRegister extends StatelessWidget {
   List<TextInputFormatter>? inputFormatters=[];
   Color colorIcon;
   IconData icons;
+  bool showPassword;
+  VoidCallback onPressed;
 
-  InputRegister({
+  InputPassword({
     required this.controller,
     required this.hint,
     required this.fonts,
@@ -22,6 +24,8 @@ class InputRegister extends StatelessWidget {
     this.inputFormatters,
     required this.colorIcon,
     required this.icons,
+    required this.showPassword,
+    required this.onPressed,
 });
 
   @override
@@ -44,6 +48,7 @@ class InputRegister extends StatelessWidget {
         borderRadius: BorderRadius.circular(10)
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
             child: TextFormField(
@@ -67,7 +72,17 @@ class InputRegister extends StatelessWidget {
               ),
             ),
           ),
-          Icon(icons,color: this.colorIcon),
+          ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.white,
+                shadowColor: Colors.white
+              ),
+              onPressed: onPressed,
+              icon: showPassword
+                  ?Icon(Icons.visibility_off,color: PaletteColor.primaryColor)
+                  :Icon(Icons.visibility,color: PaletteColor.primaryColor),
+              label: Text('')
+          )
         ],
       ),
     );

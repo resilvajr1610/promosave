@@ -6,6 +6,7 @@ export '../views/Register.dart';
 
 export '../widgets/Buttons.dart';
 export '../widgets/inputRegister.dart';
+export '../widgets/inputPassword.dart';
 export '../widgets/snackBars.dart';
 export '../widgets/ButtonText.dart';
 export '../widgets/CardsDelivery.dart';
@@ -23,3 +24,4 @@ export 'package:firebase_core/firebase_core.dart';
 export 'package:cloud_firestore/cloud_firestore.dart';
 export 'package:flutter/services.dart';
 export 'package:brasil_fields/brasil_fields.dart';
+export 'package:dio/dio.dart';

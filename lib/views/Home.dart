@@ -33,7 +33,6 @@ class _HomeState extends State<Home> {
   _search() {
     resultSearchList();
   }
-
   resultSearchList() {
     var showResults = [];
 
@@ -76,14 +75,17 @@ class _HomeState extends State<Home> {
               return DropdownMenuItem(
                 child: Row(
                   children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text(snap["address"],
+                          style: TextStyle(color: Colors.black54),
+                        ),
+                      ),
+                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12.0),
                       child: Icon(Icons.location_on,color: PaletteColor.primaryColor),
-                    ),
-                    Text('Rua : '+
-                      snap["address"],
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.black54),
                     ),
                   ],
                 ),
@@ -97,7 +99,6 @@ class _HomeState extends State<Home> {
 
   userFirebase ()async{
     String user = await FirebaseAuth.instance.currentUser!.uid;
-    print('tessss : '+user);
     if( user==null){
       Navigator.pushReplacementNamed(context, "/register");
     }else{
@@ -163,6 +164,7 @@ class _HomeState extends State<Home> {
               ),
               child:streamAddress(),
             ),
+            SizedBox(height: 10),
             InputRegister(
               icons: Icons.search,
               colorIcon: PaletteColor.primaryColor,
@@ -173,59 +175,55 @@ class _HomeState extends State<Home> {
               fonts: 14,
               keyboardType: TextInputType.text,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ButtonText(text: 'Tudo'),
-                ButtonText(text: 'Aberto'),
-                Row(
-                  children: [
-                    ButtonText(text: 'Favoritos'),
-                    Icon(Icons.favorite,color: PaletteColor.primaryColor,)
-                  ],
-                ),
-              ],
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ButtonText(text: 'Tudo'),
+                  ButtonText(text: 'Aberto'),
+                  Row(
+                    children: [
+                      ButtonText(text: 'Favoritos'),
+                      Icon(Icons.favorite,color: PaletteColor.primaryColor,)
+                    ],
+                  ),
+                ],
+              ),
             ),
             SingleChildScrollView(
               child: Container(
-                padding: EdgeInsets.all(8),
-                height: height*0.7,
-                width: width*0.8,
-                child: ListView(
-                  children: [
-                    Container(
-                      height: height * 0.5,
-                      child: StreamBuilder(
-                        stream: _controllerItems.stream,
-                        builder: (context, snapshot) {
+                padding: EdgeInsets.symmetric(horizontal: 32,vertical: 8),
+                height: height * 0.65,
+                child: StreamBuilder(
+                  stream: _controllerItems.stream,
+                  builder: (context, snapshot) {
 
-                          switch (snapshot.connectionState) {
-                            case ConnectionState.none:
-                            case ConnectionState.waiting:
-                            case ConnectionState.active:
-                            case ConnectionState.done:
-                              if(_resultsList.length == 0){
-                                return Center(
-                                    child: Text('Sem dados!',style: TextStyle(fontSize: 20),)
-                                );
-                              }else {
-                                return ListView.builder(
-                                    itemCount: _resultsList.length,
-                                    itemBuilder: (BuildContext context, index) {
-                                      DocumentSnapshot item = _resultsList[index];
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.none:
+                      case ConnectionState.waiting:
+                      case ConnectionState.active:
+                      case ConnectionState.done:
+                        if(_resultsList.length == 0){
+                          return Center(
+                              child: Text('Produto não encontrado',
+                                style: TextStyle(fontSize: 20,color: PaletteColor.primaryColor),)
+                          );
+                        }else {
+                          return ListView.builder(
+                              itemCount: _resultsList.length,
+                              itemBuilder: (BuildContext context, index) {
+                                DocumentSnapshot item = _resultsList[index];
 
-                                      String name = item["name"];
-                                      String photo = item["photo"];
-                                      double price = item["price"];
+                                String name = item["name"];
+                                String photo = item["photo"];
+                                double price = item["price"];
 
-                                      return CadsDelivery(image: photo,price: price.toStringAsFixed(2).replaceAll(".", ","));
-                                    });
-                              }
-                          }
-                        },
-                      ),
-                    ),
-                  ],
+                                return CadsDelivery(image: photo,price: price.toStringAsFixed(2).replaceAll(".", ","));
+                              });
+                        }
+                    }
+                  },
                 ),
               ),
             ),

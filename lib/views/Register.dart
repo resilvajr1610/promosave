@@ -1,5 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:flutter_google_places_web/flutter_google_places_web.dart';
 import '../Utils/export.dart';
 
 class Register extends StatefulWidget {
@@ -16,14 +15,15 @@ class _LoginState extends State<Register> {
   TextEditingController _controllerEmail = TextEditingController();
   TextEditingController _controllerPassword = TextEditingController();
   TextEditingController _controllerPasswordConfirm = TextEditingController();
-  TextEditingController _controllerAddress = TextEditingController();
+  final _controllerPlaces = TextEditingController();
   TextEditingController _controllerCPF = TextEditingController();
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore db = FirebaseFirestore.instance;
   UserRegister _userRegister = UserRegister();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  bool check = false;
+  bool visibiblePassword = false;
   String _error="";
+  final kGoogleApiKey = "AIzaSyBrOfzJKgCwsbPxmc9cSQ6DptcQvluZQFQ";
 
   _saveData(UserRegister userRegister){
     db.collection("user").doc(userRegister.idUser).set(_userRegister.toMap()).then((_)
@@ -32,61 +32,92 @@ class _LoginState extends State<Register> {
 
   _createUser()async{
 
+    _controllerPlaces.text = FlutterGooglePlacesWeb.value['name'].toString();
+
     if(_controllerName.text.isNotEmpty&&_controllerName.text.contains(" ")){
-      if (_controllerEmail.text.isNotEmpty) {
+      setState(() {
+        _error = "";
+      });
+      if(_controllerPlaces.text != "null"){
         setState(() {
           _error = "";
         });
-
-        try{
-          await _auth.createUserWithEmailAndPassword(
-              email: _controllerEmail.text,
-              password: _controllerPassword.text
-          ).then((auth)async{
-
-            User user = FirebaseAuth.instance.currentUser!;
-            user.updateDisplayName(_controllerName.text);
-
-            _userRegister.idUser = user.uid;
-            _userRegister.name = _controllerName.text;
-            _userRegister.address=_controllerAddress.text;
-            _userRegister.phone=_controllerPhone.text;
-            _userRegister.cpf=_controllerCPF.text;
-            _userRegister.email=_controllerEmail.text;
-
-            _saveData(_userRegister);
+        if (_controllerCPF.text.length>10) {
+          setState(() {
+            _error = "";
           });
-        }on FirebaseAuthException catch (e) {
-          if(e.code =="weak-password"){
+          if(_controllerPhone.text.length>7){
             setState(() {
-              _error = "Digite uma senha mais forte!";
+              _error = "";
             });
-          }else if(e.code =="unknown"){
-            setState(() {
-              _error = "A senha está vazia!";
-            });
-          }else if(e.code =="invalid-email"){
-            setState(() {
-              _error = "Digite um e-mail válido!";
-            });
-          }else if(e.code =="email-already-in-use"){
-            setState(() {
-              _error = "Esse e-mail já está cadastrado!";
-            });
+            if(_controllerPassword.text == _controllerPasswordConfirm.text && _controllerPassword.text.isNotEmpty){
+              setState(() {
+                _error = "";
+              });
+
+              try{
+                await _auth.createUserWithEmailAndPassword(
+                    email: _controllerEmail.text,
+                    password: _controllerPassword.text
+                ).then((auth)async{
+
+                  User user = FirebaseAuth.instance.currentUser!;
+                  user.updateDisplayName(_controllerName.text);
+
+                  _userRegister.idUser = user.uid;
+                  _userRegister.name = _controllerName.text;
+                  _userRegister.address=_controllerPlaces.text;
+                  _userRegister.phone=_controllerPhone.text;
+                  _userRegister.cpf=_controllerCPF.text;
+                  _userRegister.email=_controllerEmail.text;
+
+                  _saveData(_userRegister);
+                });
+              }on FirebaseAuthException catch (e) {
+                if(e.code =="weak-password"){
+                  setState(() {
+                    _error = "Digite uma senha mais forte!";
+                  });
+                }else if(e.code =="unknown"){
+                  setState(() {
+                    _error = "A senha está vazia!";
+                  });
+                }else if(e.code =="invalid-email"){
+                  setState(() {
+                    _error = "Digite um e-mail válido!";
+                  });
+                }else if(e.code =="email-already-in-use"){
+                  setState(() {
+                    _error = "Esse e-mail já está cadastrado!";
+                  });
+                }else{
+                  setState(() {
+                    _error = e.code;
+                  });
+                }
+              }
+
+            }else{
+              setState(() {
+                _error = 'Senhas diferentes';
+              });
+            }
           }else{
             setState(() {
-              _error = e.code;
+              _error = 'Confira o número do telefone';
             });
           }
+        } else {
+          setState(() {
+            _error = "Confira o CPF";
+          });
         }
-      } else {
-        setState(() {
-          _error = "Preencha seu email";
-        });
+      }else{
+        _error = 'Confira seu endereço';
       }
     }else{
       setState(() {
-        _error = "Preencha seu nome e Sobrenome";
+        _error = "Confira se o seu nome está completo";
       });
     }
   }
@@ -125,15 +156,32 @@ class _LoginState extends State<Register> {
                 fonts: 14,
                 keyboardType: TextInputType.text,
               ),
-              InputRegister(
-                icons: Icons.height,
-                colorIcon: Colors.white,
+              Container(
+                alignment: Alignment.topCenter,
                 width: width*0.8,
-                obscure: false,
-                controller: _controllerAddress,
-                hint: 'Endereço',
-                fonts: 14,
-                keyboardType: TextInputType.text,
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                margin: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+                decoration: BoxDecoration(
+                    color: Colors.white60,
+                    border: Border.all(
+                      color: Colors.black26, //                   <--- border color
+                      width: 2.0,
+                    ),
+                    borderRadius: BorderRadius.circular(10)
+                ),
+                child: FlutterGooglePlacesWeb(
+                  apiKey: kGoogleApiKey,
+                  proxyURL: 'https://cors-anywhere.herokuapp.com/',
+                  required: true,
+                  decoration: InputDecoration(
+                    hintStyle: TextStyle(color: Colors.black54,fontSize: 14),
+                    hintText: 'Endereço',
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.transparent),
+                      //  when the TextFormField in unfocused
+                    ) ,
+                  ),
+                ),
               ),
               InputRegister(
                 icons: Icons.height,
@@ -173,25 +221,45 @@ class _LoginState extends State<Register> {
                 fonts: 14,
                 keyboardType: TextInputType.emailAddress,
               ),
-              InputRegister(
+              InputPassword(
+                showPassword: visibiblePassword,
                 icons: Icons.height,
                 colorIcon: Colors.white,
                 width: width*0.8,
-                obscure: true,
+                obscure: visibiblePassword,
                 controller: _controllerPassword,
                 hint: 'Senha',
                 fonts: 14,
                 keyboardType: TextInputType.visiblePassword,
+                onPressed: (){
+                  setState(() {
+                    if(visibiblePassword==false){
+                      visibiblePassword=true;
+                    }else{
+                      visibiblePassword=false;
+                    }
+                  });
+                },
               ),
-              InputRegister(
+              InputPassword(
+                showPassword: visibiblePassword,
                 icons: Icons.height,
                 colorIcon: Colors.white,
                 width: width*0.8,
-                obscure: true,
+                obscure: visibiblePassword,
                 controller: _controllerPasswordConfirm,
                 hint: 'Confirme sua senha',
                 fonts: 14,
                 keyboardType: TextInputType.visiblePassword,
+                onPressed: (){
+                  setState(() {
+                    if(visibiblePassword==false){
+                      visibiblePassword=true;
+                    }else{
+                      visibiblePassword=false;
+                    }
+                  });
+                },
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),

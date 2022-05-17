@@ -11,7 +11,7 @@ class ButtonText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: TextStyle(color: PaletteColor.primaryColor,fontSize: 20)
+      style: TextStyle(color: PaletteColor.primaryColor,fontSize: 16)
     );
   }
 }

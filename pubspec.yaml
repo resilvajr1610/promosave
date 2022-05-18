@@ -18,6 +18,9 @@ dependencies:
   firebase_storage: ^10.0.1
   brasil_fields: ^1.4.4
   flutter_google_places_web: ^1.0.0
+  dio:
+  uuid:
+  rainbow_color:
 
 dev_dependencies:
   flutter_test:

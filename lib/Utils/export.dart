@@ -14,6 +14,7 @@ export '../widgets/MenuSheet.dart';
 
 export '../Models/UserRegister.dart';
 export '../Models/SearchModel.dart';
+export '../Models/crendentials.dart';
 
 export 'colors.dart';
 export 'RouteGenerator.dart';
@@ -24,4 +25,3 @@ export 'package:firebase_core/firebase_core.dart';
 export 'package:cloud_firestore/cloud_firestore.dart';
 export 'package:flutter/services.dart';
 export 'package:brasil_fields/brasil_fields.dart';
-export 'package:dio/dio.dart';

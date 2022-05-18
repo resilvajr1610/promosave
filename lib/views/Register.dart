@@ -1,4 +1,3 @@
-import 'package:flutter_google_places_web/flutter_google_places_web.dart';
 import '../Utils/export.dart';
 
 class Register extends StatefulWidget {
@@ -8,14 +7,14 @@ class Register extends StatefulWidget {
   _LoginState createState() => _LoginState();
 }
 
-class _LoginState extends State<Register> {
+class _LoginState extends State<Register>  with SingleTickerProviderStateMixin{
 
   TextEditingController _controllerName = TextEditingController();
   TextEditingController _controllerPhone = TextEditingController();
   TextEditingController _controllerEmail = TextEditingController();
   TextEditingController _controllerPassword = TextEditingController();
   TextEditingController _controllerPasswordConfirm = TextEditingController();
-  final _controllerPlaces = TextEditingController();
+  TextEditingController _controllerPlaces = TextEditingController();
   TextEditingController _controllerCPF = TextEditingController();
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore db = FirebaseFirestore.instance;
@@ -23,7 +22,6 @@ class _LoginState extends State<Register> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool visibiblePassword = false;
   String _error="";
-  final kGoogleApiKey = "AIzaSyBrOfzJKgCwsbPxmc9cSQ6DptcQvluZQFQ";
 
   _saveData(UserRegister userRegister){
     db.collection("user").doc(userRegister.idUser).set(_userRegister.toMap()).then((_)
@@ -32,13 +30,11 @@ class _LoginState extends State<Register> {
 
   _createUser()async{
 
-    _controllerPlaces.text = FlutterGooglePlacesWeb.value['name'].toString();
-
     if(_controllerName.text.isNotEmpty&&_controllerName.text.contains(" ")){
       setState(() {
         _error = "";
       });
-      if(_controllerPlaces.text != "null"){
+      if(_controllerPlaces.text.isNotEmpty){
         setState(() {
           _error = "";
         });
@@ -169,17 +165,21 @@ class _LoginState extends State<Register> {
                     ),
                     borderRadius: BorderRadius.circular(10)
                 ),
-                child: FlutterGooglePlacesWeb(
-                  apiKey: kGoogleApiKey,
-                  proxyURL: 'https://cors-anywhere.herokuapp.com/',
-                  required: true,
+                child: TextFormField(
+                  controller: _controllerPlaces,
+                  keyboardType: TextInputType.text,
+                  textAlignVertical: TextAlignVertical.center,
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 14,
+                  ),
                   decoration: InputDecoration(
-                    hintStyle: TextStyle(color: Colors.black54,fontSize: 14),
-                    hintText: 'Endereço',
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.transparent),
-                      //  when the TextFormField in unfocused
-                    ) ,
+                      border: InputBorder.none,
+                      hintText: 'Endereço',
+                      hintStyle: TextStyle(
+                        color: Colors.black54,
+                        fontSize: 14,
+                      )
                   ),
                 ),
               ),

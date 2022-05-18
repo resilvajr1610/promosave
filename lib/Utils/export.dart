@@ -14,7 +14,6 @@ export '../widgets/MenuSheet.dart';
 
 export '../Models/UserRegister.dart';
 export '../Models/SearchModel.dart';
-export '../Models/crendentials.dart';
 
 export 'colors.dart';
 export 'RouteGenerator.dart';

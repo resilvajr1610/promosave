@@ -1,20 +1,16 @@
-import 'package:flutter/material.dart';
-import 'package:promosave/Utils/export.dart';
+import 'package:promosave/utils/export.dart';
 
-void main(){
+void main()async{
 
   WidgetsFlutterBinding.ensureInitialized();
-  Firebase.initializeApp();
+  await Firebase.initializeApp();
 
-  String route = '/register';
-
-  if(FirebaseAuth.instance.currentUser != null){
-    route = '/home';
-  }
+  String route = '/splash';
 
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
+    home: SplashScreen(),
     initialRoute:route,
-    onGenerateRoute: RouteGenerator.generateRoute,
+    onGenerateRoute: Routes.generateRoute,
   ));
 }

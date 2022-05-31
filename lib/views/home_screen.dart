@@ -1,13 +1,13 @@
 import '../Utils/export.dart';
 
-class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  _HomeState createState() => _HomeState();
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeScreenState extends State<HomeScreen> {
 
   TextEditingController _controllerSearch = TextEditingController();
   var _controllerAddress = StreamController<QuerySnapshot>.broadcast();
@@ -133,7 +133,7 @@ class _HomeState extends State<Home> {
               ))
             )
       ),
-      backgroundColor: PaletteColor.scaffold,
+      backgroundColor: PaletteColor.white,
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: PaletteColor.primaryColor,
@@ -167,12 +167,12 @@ class _HomeState extends State<Home> {
             SizedBox(height: 10),
             InputRegister(
               icons: Icons.search,
-              colorIcon: PaletteColor.primaryColor,
+              sizeIcon: 0.0,
               width: width*0.8,
               obscure: false,
               controller: _controllerSearch,
               hint: 'Pesquisar produto',
-              fonts: 14,
+              fonts: 14.0,
               keyboardType: TextInputType.text,
             ),
             Padding(

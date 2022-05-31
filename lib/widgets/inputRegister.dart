@@ -2,15 +2,15 @@ import '../Utils/export.dart';
 
 class InputRegister extends StatelessWidget {
 
-  final TextEditingController controller;
-  final String hint;
-  final double fonts;
-  final TextInputType keyboardType;
-  final bool obscure;
-  final double width;
+  final controller;
+  final hint;
+  final fonts;
+  final keyboardType;
+  final obscure;
+  final width;
   List<TextInputFormatter>? inputFormatters=[];
-  Color colorIcon;
-  IconData icons;
+  final sizeIcon;
+  final icons;
 
   InputRegister({
     required this.controller,
@@ -20,7 +20,7 @@ class InputRegister extends StatelessWidget {
     required this.obscure,
     required this.width,
     this.inputFormatters,
-    required this.colorIcon,
+    required this.sizeIcon,
     required this.icons,
 });
 
@@ -36,12 +36,12 @@ class InputRegister extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 10),
       margin: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.white60,
-        border: Border.all(
-          color: Colors.black26, //                   <--- border color
-          width: 2.0,
-        ),
-        borderRadius: BorderRadius.circular(10)
+        color: PaletteColor.greyLight,
+        // border: Border.all(
+        //   color: Colors.black26, //                   <--- border color
+        //   width: 2.0,
+        // ),
+        borderRadius: BorderRadius.circular(5)
       ),
       child: Row(
         children: [
@@ -67,7 +67,7 @@ class InputRegister extends StatelessWidget {
               ),
             ),
           ),
-          Icon(icons,color: this.colorIcon),
+          Icon(icons,size: sizeIcon),
         ],
       ),
     );

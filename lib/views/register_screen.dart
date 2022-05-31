@@ -1,13 +1,13 @@
-import '../Utils/export.dart';
+import '../utils/export.dart';
 
-class Register extends StatefulWidget {
-  const Register({Key? key}) : super(key: key);
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({Key? key}) : super(key: key);
 
   @override
   _LoginState createState() => _LoginState();
 }
 
-class _LoginState extends State<Register>  with SingleTickerProviderStateMixin{
+class _LoginState extends State<RegisterScreen>  with SingleTickerProviderStateMixin{
 
   TextEditingController _controllerName = TextEditingController();
   TextEditingController _controllerPhone = TextEditingController();
@@ -18,13 +18,13 @@ class _LoginState extends State<Register>  with SingleTickerProviderStateMixin{
   TextEditingController _controllerCPF = TextEditingController();
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore db = FirebaseFirestore.instance;
-  UserRegister _userRegister = UserRegister();
+  UserModel _userModel = UserModel();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool visibiblePassword = false;
   String _error="";
 
-  _saveData(UserRegister userRegister){
-    db.collection("user").doc(userRegister.idUser).set(_userRegister.toMap()).then((_)
+  _saveData(UserModel userModel){
+    db.collection("user").doc(userModel.idUser).set(_userModel.toMap()).then((_)
     => Navigator.pushReplacementNamed(context, "/home"));
   }
 
@@ -60,14 +60,14 @@ class _LoginState extends State<Register>  with SingleTickerProviderStateMixin{
                   User user = FirebaseAuth.instance.currentUser!;
                   user.updateDisplayName(_controllerName.text);
 
-                  _userRegister.idUser = user.uid;
-                  _userRegister.name = _controllerName.text;
-                  _userRegister.address=_controllerPlaces.text;
-                  _userRegister.phone=_controllerPhone.text;
-                  _userRegister.cpf=_controllerCPF.text;
-                  _userRegister.email=_controllerEmail.text;
+                  _userModel.idUser = user.uid;
+                  _userModel.name = _controllerName.text;
+                  _userModel.address=_controllerPlaces.text;
+                  _userModel.phone=_controllerPhone.text;
+                  _userModel.cpf=_controllerCPF.text;
+                  _userModel.email=_controllerEmail.text;
 
-                  _saveData(_userRegister);
+                  _saveData(_userModel);
                 });
               }on FirebaseAuthException catch (e) {
                 if(e.code =="weak-password"){
@@ -123,74 +123,57 @@ class _LoginState extends State<Register>  with SingleTickerProviderStateMixin{
 
     double width = MediaQuery.of(context).size.width;
 
-    return MediaQuery.of(context).size.width<700? Scaffold(
+    return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: PaletteColor.scaffold,
+      backgroundColor: PaletteColor.white,
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: PaletteColor.primaryColor,
-        title: Image.asset('assets/logo.png',height: 100,),
+        title: TextCustom(text: 'Cadastro',size: 24.0,color: PaletteColor.white,fontWeight: FontWeight.bold,),
       ),
       body: Center(
         child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text('Crie sua conta',style: TextStyle(color: PaletteColor.primaryColor,fontSize: 20,fontWeight: FontWeight.bold),),
+                padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 10),
+                child: TextCustom(text: 'Olá, cadastre a sua empresa!',color: PaletteColor.grey,size: 16.0,fontWeight: FontWeight.bold),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: TextCustom(text: 'Nome do estabelecimento',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal),
               ),
               InputRegister(
                 icons: Icons.height,
-                colorIcon: Colors.white,
+                sizeIcon: 0.0,
                 width: width*0.8,
                 obscure: false,
                 controller: _controllerName,
-                hint: 'Nome completo',
-                fonts: 14,
+                hint: 'Nome',
+                fonts: 14.0,
                 keyboardType: TextInputType.text,
-              ),
-              Container(
-                alignment: Alignment.topCenter,
-                width: width*0.8,
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                margin: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
-                decoration: BoxDecoration(
-                    color: Colors.white60,
-                    border: Border.all(
-                      color: Colors.black26, //                   <--- border color
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10)
-                ),
-                child: TextFormField(
-                  controller: _controllerPlaces,
-                  keyboardType: TextInputType.text,
-                  textAlignVertical: TextAlignVertical.center,
-                  style: TextStyle(
-                    color: Colors.black54,
-                    fontSize: 14,
-                  ),
-                  decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Endereço',
-                      hintStyle: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 14,
-                      )
-                  ),
-                ),
               ),
               InputRegister(
                 icons: Icons.height,
-                colorIcon: Colors.white,
+                sizeIcon: 0.0,
+                width: width*0.8,
+                obscure: false,
+                controller: _controllerPlaces,
+                hint: 'Nome',
+                fonts: 14.0,
+                keyboardType: TextInputType.text,
+              ),
+              InputRegister(
+                icons: Icons.height,
+                sizeIcon: 0.0,
                 width: width*0.8,
                 obscure: false,
                 controller: _controllerCPF,
                 hint: 'CPF',
-                fonts: 14,
+                fonts: 14.0,
                 keyboardType: TextInputType.text,
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
@@ -199,12 +182,12 @@ class _LoginState extends State<Register>  with SingleTickerProviderStateMixin{
               ),
               InputRegister(
                 icons: Icons.height,
-                colorIcon: Colors.white,
+                sizeIcon: 0.0,
                 width: width*0.8,
                 obscure: false,
                 controller: _controllerPhone,
                 hint: 'Número celular',
-                fonts: 14,
+                fonts: 14.0,
                 keyboardType: TextInputType.text,
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
@@ -213,12 +196,12 @@ class _LoginState extends State<Register>  with SingleTickerProviderStateMixin{
               ),
               InputRegister(
                 icons: Icons.height,
-                colorIcon: Colors.white,
+                sizeIcon: 0.0,
                 width: width*0.8,
                 obscure: false,
                 controller: _controllerEmail,
                 hint: 'E-mail',
-                fonts: 14,
+                fonts: 14.0,
                 keyboardType: TextInputType.emailAddress,
               ),
               InputPassword(
@@ -229,7 +212,7 @@ class _LoginState extends State<Register>  with SingleTickerProviderStateMixin{
                 obscure: visibiblePassword,
                 controller: _controllerPassword,
                 hint: 'Senha',
-                fonts: 14,
+                fonts: 14.0,
                 keyboardType: TextInputType.visiblePassword,
                 onPressed: (){
                   setState(() {
@@ -268,8 +251,8 @@ class _LoginState extends State<Register>  with SingleTickerProviderStateMixin{
                   text: "Criar conta",
                   size: 0,
                   colorButton: PaletteColor.primaryColor,
-                  colorIcon: PaletteColor.white,
                   colorText: PaletteColor.white,
+                  colorBorder: PaletteColor.primaryColor,
                 ),
               ),
               Text(_error,style: TextStyle(color: Colors.red),)
@@ -277,6 +260,6 @@ class _LoginState extends State<Register>  with SingleTickerProviderStateMixin{
           ),
         ),
       ),
-    ):Scaffold(body: Center(child: Text('Em desenvolvimento')));
+    );
   }
 }

@@ -1,4 +1,4 @@
-import '../Utils/export.dart';
+import '../utils/export.dart';
 
 class InputPassword extends StatelessWidget {
 
@@ -31,20 +31,17 @@ class InputPassword extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
-
     return Container(
       alignment: Alignment.topCenter,
       width: this.width,
       padding: EdgeInsets.symmetric(horizontal: 10),
       margin: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.white60,
-        border: Border.all(
-          color: Colors.black26, //                   <--- border color
-          width: 2.0,
-        ),
+        color: PaletteColor.greyLight,
+        // border: Border.all(
+        //   color: Colors.black26, //                   <--- border color
+        //   width: 2.0,
+        // ),
         borderRadius: BorderRadius.circular(10)
       ),
       child: Row(
@@ -74,8 +71,9 @@ class InputPassword extends StatelessWidget {
           ),
           ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                primary: Colors.white,
-                shadowColor: Colors.white
+                primary: PaletteColor.greyLight,
+                shadowColor: Colors.white,
+                elevation: 0
               ),
               onPressed: onPressed,
               icon: showPassword

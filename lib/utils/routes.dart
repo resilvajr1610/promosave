@@ -1,17 +1,29 @@
 import 'export.dart';
 
-class RouteGenerator{
+class Routes{
     static Route<dynamic>? generateRoute(RouteSettings settings){
       final args = settings.arguments;
 
       switch(settings.name){
         case "/home" :
           return MaterialPageRoute(
-              builder: (_) => Home()
+              builder: (_) => HomeScreen()
+          );
+        case "/splash" :
+          return MaterialPageRoute(
+              builder: (_) => SplashScreen()
+          );
+        case "/initial" :
+          return MaterialPageRoute(
+              builder: (_) => InitialScreen()
           );
         case "/register" :
           return MaterialPageRoute(
-              builder: (_) => Register()
+              builder: (_) => RegisterScreen()
+          );
+        case "/login" :
+          return MaterialPageRoute(
+              builder: (_) => LoginScreen()
           );
         default :
           _erroRota();

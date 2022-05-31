@@ -1,8 +1,11 @@
 export 'package:flutter/material.dart';
 export 'dart:async';
 
-export '../views/Home.dart';
-export '../views/Register.dart';
+export '../views/home_screen.dart';
+export '../views/register_screen.dart';
+export '../views/splash_screen.dart';
+export '../views/initial_screen.dart';
+export '../views/login_screen.dart';
 
 export '../widgets/Buttons.dart';
 export '../widgets/inputRegister.dart';
@@ -11,12 +14,13 @@ export '../widgets/snackBars.dart';
 export '../widgets/ButtonText.dart';
 export '../widgets/CardsDelivery.dart';
 export '../widgets/MenuSheet.dart';
+export '../widgets/text_custom.dart';
 
-export '../Models/UserRegister.dart';
-export '../Models/SearchModel.dart';
+export '../models/user_model.dart';
+export '../models/search_model.dart';
 
 export 'colors.dart';
-export 'RouteGenerator.dart';
+export 'routes.dart';
 
 export 'dart:convert';
 export 'package:firebase_auth/firebase_auth.dart';

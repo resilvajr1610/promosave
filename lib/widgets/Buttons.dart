@@ -6,7 +6,7 @@ class Buttons extends StatelessWidget {
   final double size;
   final Color colorButton;
   final Color colorText;
-  final Color colorIcon;
+  final Color colorBorder;
 
   Buttons({
     required this.onPressed,
@@ -14,7 +14,7 @@ class Buttons extends StatelessWidget {
     required this.size,
     required this.colorButton,
     required this.colorText,
-    required this.colorIcon,
+    required this.colorBorder,
   });
 
   @override
@@ -26,11 +26,12 @@ class Buttons extends StatelessWidget {
     return ElevatedButton(
           style: ElevatedButton.styleFrom(
             primary: this.colorButton,
-            minimumSize: Size(width*0.8, height*0.07)
+            minimumSize: Size(width*0.8, height*0.07),
+            side: BorderSide(width: 3,color: colorBorder),
           ),
-        onPressed: this.onPressed,
-        child: Text(this.text,
-            style: TextStyle(fontFamily: 'Nunito',color: this.colorText)
+        onPressed: onPressed,
+        child: Text(text,
+            style: TextStyle(fontFamily: 'Nunito',color: colorText,fontSize: 14,fontWeight: FontWeight.bold)
         )
     );
   }

@@ -17,7 +17,6 @@ dependencies:
   cloud_firestore: ^2.4.0
   firebase_storage: ^10.0.1
   brasil_fields: ^1.4.4
-  flutter_google_places_web: ^1.0.0
   dio:
   uuid:
   rainbow_color:
@@ -33,4 +32,9 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/
+    - assets/image/
+
+  fonts:
+    - family: Nunito
+      fonts:
+        - asset: assets/fonts/Nunito-Regular.ttf

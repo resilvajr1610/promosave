@@ -1,4 +1,4 @@
-class UserRegister{
+class UserModel{
 
   String idUser="";
   String name="";

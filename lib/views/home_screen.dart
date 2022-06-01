@@ -1,4 +1,4 @@
-import '../Utils/export.dart';
+import '../utils/export.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -9,7 +9,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-  TextEditingController _controllerSearch = TextEditingController();
+  final _controllerSearch = TextEditingController();
   var _controllerAddress = StreamController<QuerySnapshot>.broadcast();
   var _controllerItems = StreamController<QuerySnapshot>.broadcast();
   FirebaseFirestore db = FirebaseFirestore.instance;
@@ -52,51 +52,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Widget streamAddress() {
-
-    return StreamBuilder<QuerySnapshot>(
-      stream:_controllerAddress.stream,
-      builder: (context,snapshot){
-
-        if(snapshot.hasError)
-          return Text("Erro ao carregar dados!");
-
-        switch (snapshot.connectionState){
-          case ConnectionState.none:
-          case ConnectionState.waiting:
-            return Center(child: Text('Carregando ...'));
-          case ConnectionState.active:
-          case ConnectionState.done:
-
-            if(!snapshot.hasData){
-              return CircularProgressIndicator();
-            }else {
-              DocumentSnapshot snap = snapshot.data!.docs[0];
-              return DropdownMenuItem(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Text(snap["address"],
-                          style: TextStyle(color: Colors.black54),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      child: Icon(Icons.location_on,color: PaletteColor.primaryColor),
-                    ),
-                  ],
-                ),
-                value: "${snap["address"]}",
-              );
-            }
-        }
-      },
-    );
-  }
-
   userFirebase ()async{
     String user = await FirebaseAuth.instance.currentUser!.uid;
     if( user==null){
@@ -119,82 +74,77 @@ class _HomeScreenState extends State<HomeScreen> {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
 
-    return MediaQuery.of(context).size.width<700? Scaffold(
-      drawer: Center(
-          child: Container(
-            alignment: Alignment.center,
-            height: double.infinity,
-            color: Colors.white,
-            child: Text('Em construção',
-              style: TextStyle(
-                  color: PaletteColor.primaryColor,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold
-              ))
-            )
-      ),
+    return Scaffold(
+      drawer: DrawerCustom(),
       backgroundColor: PaletteColor.white,
       appBar: AppBar(
+        elevation: 0,
         centerTitle: true,
         backgroundColor: PaletteColor.primaryColor,
-        title: Image.asset('assets/logo.png',height: 100,),
-        actions: [
-         Padding(
-           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-           child: Icon(Icons.tune),
-         )
-        ],
+        title: Image.asset('assets/image/logo.png',height: 100,),
       ),
-      bottomSheet: MenuSheet(),
-      body: Container(
-        padding: EdgeInsets.all(16),
-        alignment: Alignment.topCenter,
-        child: Column(
-          children: [
-            Container(
-              width: width*0.8,
-              height: 50,
-              decoration: BoxDecoration(
-                  color: Colors.white60,
-                  border: Border.all(
-                    color: Colors.black26, //                   <--- border color
-                    width: 2.0,
-                  ),
-                  borderRadius: BorderRadius.circular(10)
+      body: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.all(12),
+          alignment: Alignment.topCenter,
+          child: Column(
+            children: [
+              InputHome(
+                  widget: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      alignment: Alignment.centerLeft,
+                      child: Row(
+                        children: [
+                          TextCustom(text: 'Cidade - SP',fontWeight: FontWeight.normal,size: 16.0, color: PaletteColor.greyInput,),
+                          Spacer(),
+                          Icon(Icons.location_on,size: 25,color: PaletteColor.primaryColor,),
+                        ],
+                      ))),
+              InputHome(
+                  widget: Container(
+                alignment: Alignment.centerLeft,
+                width: width*0.8,
+                margin: EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _controllerSearch,
+                        textAlign: TextAlign.start,
+                        keyboardType: TextInputType.text,
+                        textAlignVertical: TextAlignVertical.center,
+                        style: TextStyle(
+                          color: PaletteColor.grey,
+                          fontSize: 16.0,
+                        ),
+                        decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Pesquisar produto',
+                            hintStyle: TextStyle(
+                              color: PaletteColor.greyInput,
+                              fontSize: 16.0,
+                            )
+                        ),
+                      ),
+                    ),
+                    Icon(Icons.search,size: 25,color: PaletteColor.primaryColor,),
+                  ],
+                ),
+              )),
+              SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    TextCustom(text: 'Tudo',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal),
+                    TextCustom(text: 'Aberto',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal),
+                    TextCustom(text: 'Favoritos',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal),
+                  ],
+                ),
               ),
-              child:streamAddress(),
-            ),
-            SizedBox(height: 10),
-            InputRegister(
-              icons: Icons.search,
-              sizeIcon: 0.0,
-              width: width*0.8,
-              obscure: false,
-              controller: _controllerSearch,
-              hint: 'Pesquisar produto',
-              fonts: 14.0,
-              keyboardType: TextInputType.text,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ButtonText(text: 'Tudo'),
-                  ButtonText(text: 'Aberto'),
-                  Row(
-                    children: [
-                      ButtonText(text: 'Favoritos'),
-                      Icon(Icons.favorite,color: PaletteColor.primaryColor,)
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            SingleChildScrollView(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 32,vertical: 8),
-                height: height * 0.65,
+              Container(
+                height: height*0.5,
                 child: StreamBuilder(
                   stream: _controllerItems.stream,
                   builder: (context, snapshot) {
@@ -216,20 +166,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                 DocumentSnapshot item = _resultsList[index];
 
                                 String name = item["name"];
-                                String photo = item["photo"];
-                                double price = item["price"];
+                                final photo = item["photo"];
+                                final price = item["price"];
 
-                                return CadsDelivery(image: photo,price: price.toStringAsFixed(2).replaceAll(".", ","));
-                              });
+                                return CardHome(image: photo,name: name.toUpperCase(),price: price.toStringAsFixed(2).replaceAll(".", ","));
+                              }
+                          );
                         }
                     }
                   },
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ):Scaffold(body: Center(child: Text('Em desenvolvimento')));
+    );
   }
 }

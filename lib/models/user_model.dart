@@ -5,7 +5,6 @@ class UserModel{
   String email="";
   String cpf="";
   String phone="";
-  String address="";
 
   Map<String,dynamic> toMap(){
     Map<String,dynamic> map = {
@@ -14,7 +13,6 @@ class UserModel{
       "email" : this.email,
       "cpf" : this.cpf,
       "phone" : this.phone,
-      "address" : this.address,
     };
     return map;
   }

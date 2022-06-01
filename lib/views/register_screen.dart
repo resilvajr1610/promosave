@@ -14,7 +14,6 @@ class _LoginState extends State<RegisterScreen>  with SingleTickerProviderStateM
   TextEditingController _controllerEmail = TextEditingController();
   TextEditingController _controllerPassword = TextEditingController();
   TextEditingController _controllerPasswordConfirm = TextEditingController();
-  TextEditingController _controllerPlaces = TextEditingController();
   TextEditingController _controllerCPF = TextEditingController();
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore db = FirebaseFirestore.instance;
@@ -25,7 +24,7 @@ class _LoginState extends State<RegisterScreen>  with SingleTickerProviderStateM
 
   _saveData(UserModel userModel){
     db.collection("user").doc(userModel.idUser).set(_userModel.toMap()).then((_)
-    => Navigator.pushReplacementNamed(context, "/home"));
+    => Navigator.pushReplacementNamed(context, "/profile"));
   }
 
   _createUser()async{
@@ -34,86 +33,86 @@ class _LoginState extends State<RegisterScreen>  with SingleTickerProviderStateM
       setState(() {
         _error = "";
       });
-      if(_controllerPlaces.text.isNotEmpty){
+      if (_controllerCPF.text.length>10) {
         setState(() {
           _error = "";
         });
-        if (_controllerCPF.text.length>10) {
+        if(_controllerPhone.text.length>7){
           setState(() {
             _error = "";
           });
-          if(_controllerPhone.text.length>7){
+          if(_controllerPassword.text == _controllerPasswordConfirm.text && _controllerPassword.text.isNotEmpty){
             setState(() {
               _error = "";
             });
-            if(_controllerPassword.text == _controllerPasswordConfirm.text && _controllerPassword.text.isNotEmpty){
-              setState(() {
-                _error = "";
+
+            try{
+              await _auth.createUserWithEmailAndPassword(
+                  email: _controllerEmail.text,
+                  password: _controllerPassword.text
+              ).then((auth)async{
+
+                User user = FirebaseAuth.instance.currentUser!;
+                user.updateDisplayName(_controllerName.text);
+
+                _userModel.idUser = user.uid;
+                _userModel.name = _controllerName.text;
+                _userModel.phone=_controllerPhone.text;
+                _userModel.cpf=_controllerCPF.text;
+                _userModel.email=_controllerEmail.text;
+
+                _saveData(_userModel);
               });
-
-              try{
-                await _auth.createUserWithEmailAndPassword(
-                    email: _controllerEmail.text,
-                    password: _controllerPassword.text
-                ).then((auth)async{
-
-                  User user = FirebaseAuth.instance.currentUser!;
-                  user.updateDisplayName(_controllerName.text);
-
-                  _userModel.idUser = user.uid;
-                  _userModel.name = _controllerName.text;
-                  _userModel.address=_controllerPlaces.text;
-                  _userModel.phone=_controllerPhone.text;
-                  _userModel.cpf=_controllerCPF.text;
-                  _userModel.email=_controllerEmail.text;
-
-                  _saveData(_userModel);
+            }on FirebaseAuthException catch (e) {
+              if(e.code =="weak-password"){
+                setState(() {
+                  _error = "Digite uma senha mais forte!";
+                  showSnackBar(context, _error,_scaffoldKey);
                 });
-              }on FirebaseAuthException catch (e) {
-                if(e.code =="weak-password"){
-                  setState(() {
-                    _error = "Digite uma senha mais forte!";
-                  });
-                }else if(e.code =="unknown"){
-                  setState(() {
-                    _error = "A senha está vazia!";
-                  });
-                }else if(e.code =="invalid-email"){
-                  setState(() {
-                    _error = "Digite um e-mail válido!";
-                  });
-                }else if(e.code =="email-already-in-use"){
-                  setState(() {
-                    _error = "Esse e-mail já está cadastrado!";
-                  });
-                }else{
-                  setState(() {
-                    _error = e.code;
-                  });
-                }
+              }else if(e.code =="unknown"){
+                setState(() {
+                  _error = "A senha está vazia!";
+                  showSnackBar(context, _error,_scaffoldKey);
+                });
+              }else if(e.code =="invalid-email"){
+                setState(() {
+                  _error = "Digite um e-mail válido!";
+                  showSnackBar(context, _error,_scaffoldKey);
+                });
+              }else if(e.code =="email-already-in-use"){
+                setState(() {
+                  _error = "Esse e-mail já está cadastrado!";
+                  showSnackBar(context, _error,_scaffoldKey);
+                });
+              }else{
+                setState(() {
+                  _error = e.code;
+                });
               }
-
-            }else{
-              setState(() {
-                _error = 'Senhas diferentes';
-              });
             }
+
           }else{
             setState(() {
-              _error = 'Confira o número do telefone';
+              _error = 'Senhas diferentes';
+              showSnackBar(context, _error,_scaffoldKey);
             });
           }
-        } else {
+        }else{
           setState(() {
-            _error = "Confira o CPF";
+            _error = 'Confira o número do telefone';
+            showSnackBar(context, _error,_scaffoldKey);
           });
         }
-      }else{
-        _error = 'Confira seu endereço';
+      } else {
+        setState(() {
+          _error = "Confira o CPF";
+          showSnackBar(context, _error,_scaffoldKey);
+        });
       }
     }else{
       setState(() {
         _error = "Confira se o seu nome está completo";
+        showSnackBar(context, _error,_scaffoldKey);
       });
     }
   }
@@ -140,11 +139,11 @@ class _LoginState extends State<RegisterScreen>  with SingleTickerProviderStateM
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 10),
-                child: TextCustom(text: 'Olá, cadastre a sua empresa!',color: PaletteColor.grey,size: 16.0,fontWeight: FontWeight.bold),
+                child: TextCustom(text: 'Olá, crie a sua conta!',color: PaletteColor.grey,size: 16.0,fontWeight: FontWeight.bold),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: TextCustom(text: 'Nome do estabelecimento',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal),
+                child: TextCustom(text: 'Nome',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal),
               ),
               InputRegister(
                 icons: Icons.height,
@@ -152,19 +151,13 @@ class _LoginState extends State<RegisterScreen>  with SingleTickerProviderStateM
                 width: width*0.8,
                 obscure: false,
                 controller: _controllerName,
-                hint: 'Nome',
+                hint: 'Nome completo',
                 fonts: 14.0,
                 keyboardType: TextInputType.text,
               ),
-              InputRegister(
-                icons: Icons.height,
-                sizeIcon: 0.0,
-                width: width*0.8,
-                obscure: false,
-                controller: _controllerPlaces,
-                hint: 'Nome',
-                fonts: 14.0,
-                keyboardType: TextInputType.text,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: TextCustom(text: 'CPF',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal),
               ),
               InputRegister(
                 icons: Icons.height,
@@ -172,13 +165,17 @@ class _LoginState extends State<RegisterScreen>  with SingleTickerProviderStateM
                 width: width*0.8,
                 obscure: false,
                 controller: _controllerCPF,
-                hint: 'CPF',
+                hint: '000.000.000-00',
                 fonts: 14.0,
-                keyboardType: TextInputType.text,
+                keyboardType: TextInputType.number,
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
                   CpfInputFormatter()
                 ],
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: TextCustom(text: 'Telefone',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal),
               ),
               InputRegister(
                 icons: Icons.height,
@@ -186,13 +183,17 @@ class _LoginState extends State<RegisterScreen>  with SingleTickerProviderStateM
                 width: width*0.8,
                 obscure: false,
                 controller: _controllerPhone,
-                hint: 'Número celular',
+                hint: '(XX) XXXXX-XXXX',
                 fonts: 14.0,
-                keyboardType: TextInputType.text,
+                keyboardType: TextInputType.number,
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
                   TelefoneInputFormatter()
                 ],
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: TextCustom(text: 'E - mail',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal),
               ),
               InputRegister(
                 icons: Icons.height,
@@ -204,6 +205,10 @@ class _LoginState extends State<RegisterScreen>  with SingleTickerProviderStateM
                 fonts: 14.0,
                 keyboardType: TextInputType.emailAddress,
               ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: TextCustom(text: 'Senha',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal),
+              ),
               InputPassword(
                 showPassword: visibiblePassword,
                 icons: Icons.height,
@@ -211,7 +216,7 @@ class _LoginState extends State<RegisterScreen>  with SingleTickerProviderStateM
                 width: width*0.8,
                 obscure: visibiblePassword,
                 controller: _controllerPassword,
-                hint: 'Senha',
+                hint: '********',
                 fonts: 14.0,
                 keyboardType: TextInputType.visiblePassword,
                 onPressed: (){
@@ -224,6 +229,10 @@ class _LoginState extends State<RegisterScreen>  with SingleTickerProviderStateM
                   });
                 },
               ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: TextCustom(text: 'Confirmar Senha',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal),
+              ),
               InputPassword(
                 showPassword: visibiblePassword,
                 icons: Icons.height,
@@ -231,7 +240,7 @@ class _LoginState extends State<RegisterScreen>  with SingleTickerProviderStateM
                 width: width*0.8,
                 obscure: visibiblePassword,
                 controller: _controllerPasswordConfirm,
-                hint: 'Confirme sua senha',
+                hint: '********',
                 fonts: 14,
                 keyboardType: TextInputType.visiblePassword,
                 onPressed: (){
@@ -246,7 +255,7 @@ class _LoginState extends State<RegisterScreen>  with SingleTickerProviderStateM
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Buttons(
+                child: ButtonCustom(
                   onPressed: ()=>_createUser(),
                   text: "Criar conta",
                   size: 0,
@@ -255,7 +264,6 @@ class _LoginState extends State<RegisterScreen>  with SingleTickerProviderStateM
                   colorBorder: PaletteColor.primaryColor,
                 ),
               ),
-              Text(_error,style: TextStyle(color: Colors.red),)
             ],
           ),
         ),

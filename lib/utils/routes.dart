@@ -25,6 +25,14 @@ class Routes{
           return MaterialPageRoute(
               builder: (_) => LoginScreen()
           );
+        case "/navigation" :
+          return MaterialPageRoute(
+              builder: (_) => NavigationScreen()
+          );
+        case "/profile" :
+          return MaterialPageRoute(
+              builder: (_) => ProfileScreen()
+          );
         default :
           _erroRota();
       }

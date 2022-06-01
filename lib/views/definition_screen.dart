@@ -41,7 +41,7 @@ class _DefinitionScreenState extends State<DefinitionScreen> {
               SizedBox(height: height*0.06),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Buttons(
+                child: ButtonCustom(
                   onPressed: ()=>Navigator.pushNamed(context, '/enterprise'),
                   text: "Sou uma loja",
                   size: 0,
@@ -52,7 +52,7 @@ class _DefinitionScreenState extends State<DefinitionScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Buttons(
+                child: ButtonCustom(
                   onPressed: (){},
                   text: "Sou um entregador",
                   size: 0,

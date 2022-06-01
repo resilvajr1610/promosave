@@ -26,7 +26,7 @@ class _InitialScreenState extends State<InitialScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Buttons(
+                child: ButtonCustom(
                   onPressed: ()=> Navigator.pushNamed(context, '/register'),
                   text: "Cadastrar",
                   size: 0,
@@ -37,7 +37,7 @@ class _InitialScreenState extends State<InitialScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Buttons(
+                child: ButtonCustom(
                   onPressed: ()=> Navigator.pushNamed(context, '/login'),
                   text: "Entrar",
                   size: 0,

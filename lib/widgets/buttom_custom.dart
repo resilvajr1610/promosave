@@ -1,6 +1,6 @@
-import '../Utils/export.dart';
+import '../utils/export.dart';
 
-class Buttons extends StatelessWidget {
+class ButtonCustom extends StatelessWidget {
   final VoidCallback onPressed;
   final String text;
   final double size;
@@ -8,7 +8,7 @@ class Buttons extends StatelessWidget {
   final Color colorText;
   final Color colorBorder;
 
-  Buttons({
+  ButtonCustom({
     required this.onPressed,
     required this.text,
     required this.size,

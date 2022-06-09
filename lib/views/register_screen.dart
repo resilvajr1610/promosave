@@ -128,7 +128,7 @@ class _LoginState extends State<RegisterScreen>  with SingleTickerProviderStateM
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: PaletteColor.primaryColor,
-        title: TextCustom(text: 'Cadastro',size: 24.0,color: PaletteColor.white,fontWeight: FontWeight.bold,),
+        title: TextCustom(text: 'Cadastro',size: 24.0,color: PaletteColor.white,fontWeight: FontWeight.bold,textAlign: TextAlign.center,),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -139,11 +139,11 @@ class _LoginState extends State<RegisterScreen>  with SingleTickerProviderStateM
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 10),
-                child: TextCustom(text: 'Olá, crie a sua conta!',color: PaletteColor.grey,size: 16.0,fontWeight: FontWeight.bold),
+                child: TextCustom(text: 'Olá, crie a sua conta!',color: PaletteColor.grey,size: 16.0,fontWeight: FontWeight.bold,textAlign: TextAlign.center),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: TextCustom(text: 'Nome',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal),
+                child: TextCustom(text: 'Nome',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal,textAlign: TextAlign.center),
               ),
               InputRegister(
                 icons: Icons.height,
@@ -157,7 +157,7 @@ class _LoginState extends State<RegisterScreen>  with SingleTickerProviderStateM
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: TextCustom(text: 'CPF',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal),
+                child: TextCustom(text: 'CPF',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal,textAlign: TextAlign.center),
               ),
               InputRegister(
                 icons: Icons.height,
@@ -175,7 +175,7 @@ class _LoginState extends State<RegisterScreen>  with SingleTickerProviderStateM
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: TextCustom(text: 'Telefone',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal),
+                child: TextCustom(text: 'Telefone',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal,textAlign: TextAlign.center),
               ),
               InputRegister(
                 icons: Icons.height,
@@ -193,7 +193,7 @@ class _LoginState extends State<RegisterScreen>  with SingleTickerProviderStateM
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: TextCustom(text: 'E - mail',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal),
+                child: TextCustom(text: 'E - mail',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal,textAlign: TextAlign.center),
               ),
               InputRegister(
                 icons: Icons.height,
@@ -207,7 +207,7 @@ class _LoginState extends State<RegisterScreen>  with SingleTickerProviderStateM
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: TextCustom(text: 'Senha',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal),
+                child: TextCustom(text: 'Senha',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal,textAlign: TextAlign.center),
               ),
               InputPassword(
                 showPassword: visibiblePassword,
@@ -231,7 +231,7 @@ class _LoginState extends State<RegisterScreen>  with SingleTickerProviderStateM
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: TextCustom(text: 'Confirmar Senha',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal),
+                child: TextCustom(text: 'Confirmar Senha',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal,textAlign: TextAlign.center),
               ),
               InputPassword(
                 showPassword: visibiblePassword,

@@ -28,6 +28,8 @@ export '../models/search_model.dart';
 
 export 'colors.dart';
 export 'routes.dart';
+export 'text_const.dart';
+export 'error_list.dart';
 
 export 'dart:convert';
 export 'package:firebase_auth/firebase_auth.dart';

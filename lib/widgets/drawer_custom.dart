@@ -26,7 +26,7 @@ class DrawerCustom extends StatelessWidget {
                       backgroundImage: AssetImage('assets/image/logo.png'),
                     ),
                   ),
-                  TextCustom(text: 'Guilia Maria', size: 16.0, color: PaletteColor.primaryColor, fontWeight: FontWeight.bold)
+                  TextCustom(text: 'Guilia Maria', size: 16.0, color: PaletteColor.primaryColor, fontWeight: FontWeight.bold,textAlign: TextAlign.center)
                 ],
               ),
             ),

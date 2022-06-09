@@ -23,7 +23,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         elevation: 0,
         centerTitle: true,
         backgroundColor: PaletteColor.primaryColor,
-        title: TextCustom(text: 'Perfil',size: 24.0,color: PaletteColor.white,fontWeight: FontWeight.bold,),
+        title: TextCustom(text: 'Perfil',size: 24.0,color: PaletteColor.white,fontWeight: FontWeight.bold,textAlign: TextAlign.center),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -40,8 +40,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   backgroundImage: AssetImage('assets/image/logo.png'),
                 ),
               ),
-              TextCustom(text: 'Guilia Maria', size: 14.0, color: PaletteColor.greyInput, fontWeight: FontWeight.bold),
-              TextCustom(text: 'giuliamaria@gmail.com', size: 14.0, color: PaletteColor.greyInput, fontWeight: FontWeight.bold),
+              TextCustom(text: 'Guilia Maria', size: 14.0, color: PaletteColor.greyInput, fontWeight: FontWeight.bold,textAlign: TextAlign.center),
+              TextCustom(text: 'giuliamaria@gmail.com', size: 14.0, color: PaletteColor.greyInput, fontWeight: FontWeight.bold,textAlign: TextAlign.center),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -62,9 +62,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ],
                             )
                         ),
-                        child: Center(child: TextCustom(text: 'R\$\n20', size: 16.0, color: PaletteColor.white, fontWeight: FontWeight.w500)),
+                        child: Center(child: TextCustom(text: 'R\$\n20', size: 16.0, color: PaletteColor.white, fontWeight: FontWeight.w500,textAlign: TextAlign.center)),
                       ),
-                      TextCustom(text: 'Dinheiro\npoupado', size: 12.0, color: PaletteColor.primaryColor, fontWeight: FontWeight.normal),
+                      TextCustom(text: 'Dinheiro\npoupado', size: 12.0, color: PaletteColor.primaryColor, fontWeight: FontWeight.normal,textAlign: TextAlign.center),
                     ],
                   ),
                   Column(
@@ -84,9 +84,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ],
                             )
                         ),
-                        child: Center(child: TextCustom(text: '4', size: 24.0, color: PaletteColor.white, fontWeight: FontWeight.w500)),
+                        child: Center(child: TextCustom(text: '4', size: 24.0, color: PaletteColor.white, fontWeight: FontWeight.w500,textAlign: TextAlign.center)),
                       ),
-                      TextCustom(text: 'Alimentos\nsalvos', size: 12.0, color: PaletteColor.primaryColor, fontWeight: FontWeight.normal),
+                      TextCustom(text: 'Alimentos\nsalvos', size: 12.0, color: PaletteColor.primaryColor, fontWeight: FontWeight.normal,textAlign: TextAlign.center),
                     ],
                   ),
                 ],
@@ -95,13 +95,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 width: width,
                 alignment: Alignment.centerLeft,
                 padding: EdgeInsets.all(8),
-                child: TextCustom(text: 'Alterar dados :', size: 16.0, color: PaletteColor.grey, fontWeight: FontWeight.normal)
+                child: TextCustom(text: 'Alterar dados :', size: 16.0, color: PaletteColor.grey, fontWeight: FontWeight.normal,textAlign: TextAlign.center)
               ),
               Container(
                   width: width,
                   alignment: Alignment.centerLeft,
                   padding: EdgeInsets.symmetric(horizontal: 8),
-                  child: TextCustom(text: 'Telefone', size: 14.0, color: PaletteColor.primaryColor, fontWeight: FontWeight.normal)
+                  child: TextCustom(text: 'Telefone', size: 14.0, color: PaletteColor.primaryColor, fontWeight: FontWeight.normal,textAlign: TextAlign.center)
               ),
               InputRegister(
                 icons: Icons.height,
@@ -121,7 +121,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   width: width,
                   alignment: Alignment.centerLeft,
                   padding: EdgeInsets.symmetric(horizontal: 8,vertical: 8),
-                  child: TextCustom(text: 'Endereço', size: 14.0, color: PaletteColor.primaryColor, fontWeight: FontWeight.normal)
+                  child: TextCustom(text: 'Endereço', size: 14.0, color: PaletteColor.primaryColor, fontWeight: FontWeight.normal,textAlign: TextAlign.center)
               ),
               Container(
                   width: width,
@@ -168,7 +168,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: PaletteColor.greyLight,
                         borderRadius: BorderRadius.circular(5)
                     ),
-                    child: TextCustom(size: 14.0, fontWeight: FontWeight.normal, color: PaletteColor.grey, text: 'Adicionar novo endereço',),
+                    child: TextCustom(size: 14.0, fontWeight: FontWeight.normal, color: PaletteColor.grey, text: 'Adicionar novo endereço',textAlign: TextAlign.center),
                   ),
                   Spacer()
                 ],

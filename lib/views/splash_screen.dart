@@ -9,28 +9,32 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
 
-  Future<bool> _mockCheckForSession()async{
-    await Future.delayed(Duration(milliseconds: 3000),(){});
+  _mockCheckForSession()async{
 
-    return true;
+    if(FirebaseAuth.instance.currentUser!=null){
+      await Future.delayed(Duration(seconds: 3),(){
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+                builder: ( BuildContext context) => HomeScreen()
+            )
+        );
+      });
+    }else{
+      await Future.delayed(Duration(seconds: 3),(){
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+                builder: ( BuildContext context) => LoginScreen()
+            )
+        );
+      });
+    }
   }
-
   @override
   void initState() {
     super.initState();
-
-    _mockCheckForSession().then(
-            (status) {
-          if(status){
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                    builder: ( BuildContext context) => InitialScreen()
-                )
-            );
-          }
-        }
-    );
+    _mockCheckForSession();
   }
+
 
   @override
   Widget build(BuildContext context) {

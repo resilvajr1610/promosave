@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 import '../utils/export.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -22,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _controllerAddress.add(data);
     });
 
-    var data = await db.collection("items").get();
+    var data = await db.collection("enterprise").where('type', isEqualTo: TextConst.ENTERPRISE).get();
 
     setState(() {
       _allResults = data.docs;
@@ -95,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       alignment: Alignment.centerLeft,
                       child: Row(
                         children: [
-                          TextCustom(text: 'Cidade - SP',fontWeight: FontWeight.normal,size: 16.0, color: PaletteColor.greyInput,),
+                          TextCustom(text: 'Cidade - SP',fontWeight: FontWeight.normal,size: 16.0, color: PaletteColor.greyInput,textAlign: TextAlign.center,),
                           Spacer(),
                           Icon(Icons.location_on,size: 25,color: PaletteColor.primaryColor,),
                         ],
@@ -137,9 +139,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    TextCustom(text: 'Tudo',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal),
-                    TextCustom(text: 'Aberto',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal),
-                    TextCustom(text: 'Favoritos',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal),
+                    TextCustom(text: 'Tudo',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal,textAlign: TextAlign.center,),
+                    TextCustom(text: 'Aberto',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal,textAlign: TextAlign.center),
+                    TextCustom(text: 'Favoritos',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal,textAlign: TextAlign.center),
                   ],
                 ),
               ),
@@ -165,11 +167,37 @@ class _HomeScreenState extends State<HomeScreen> {
                               itemBuilder: (BuildContext context, index) {
                                 DocumentSnapshot item = _resultsList[index];
 
-                                String name = item["name"];
-                                final photo = item["photo"];
-                                final price = item["price"];
+                                String idUser = ErrorList(item,'idUser');
+                                String name = ErrorList(item,'name');
+                                final urlPhotoProfile = ErrorList(item,'urlPhotoProfile');
+                                final urlPhotoBanner = ErrorList(item,'urlPhotoBanner');
+                                final startHours = ErrorList(item,'startHours');
+                                final finishHours = ErrorList(item,'finishHours');
+                                final now= DateTime.now();
+                                int nowFormat = int.parse(DateFormat('HH').format(now));
+                                var status = '-';
 
-                                return CardHome(image: photo,name: name.toUpperCase(),price: price.toStringAsFixed(2).replaceAll(".", ","));
+                                if(startHours!=""){
+                                  int  startFormat = int.parse(DateFormat('HH').format(DateTime.parse("2022-06-08 "+startHours+":49.492104").toLocal()));
+                                  int  finishFormat = int.parse(DateFormat('HH').format(DateTime.parse("2022-06-08 "+finishHours+":49.492104").toLocal()));
+                                  if(nowFormat>startFormat && nowFormat<finishFormat){
+                                      status = 'Aberto';
+                                  }else{
+                                    status = 'Fechado';
+                                  }
+                                }
+
+                                return CardHome(
+                                  onTap: (){
+
+                                  },
+                                  urlPhotoProfile: urlPhotoProfile,
+                                  urlPhotoBanner: urlPhotoBanner,
+                                  startHours: startHours,
+                                  finishHours: finishHours,
+                                  name: name.toUpperCase(),
+                                  status: status,
+                                );
                               }
                           );
                         }

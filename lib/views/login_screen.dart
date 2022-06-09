@@ -25,8 +25,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
       try{
         await _auth.signInWithEmailAndPassword(
-            email: _controllerEmail.text,
-            password: _controllerPassword.text
+            email: _controllerEmail.text.trim(),
+            password: _controllerPassword.text.trim()
         ).then((auth)async{
           print("logado");
           Navigator.pushReplacementNamed(context, "/navigation");
@@ -81,19 +81,21 @@ class _LoginScreenState extends State<LoginScreen> {
                     text: 'BEM VINDO!',
                     size: 16.0,
                     color: PaletteColor.grey,
-                    fontWeight: FontWeight.bold
+                    fontWeight: FontWeight.bold,
+                    textAlign: TextAlign.center
                 ),
                 SizedBox(height: height*0.02),
                 TextCustom(
                     text:'“Juntos contra o desperdício”',
                     size: 16.0,
                     color: PaletteColor.grey,
-                    fontWeight: FontWeight.bold
+                    fontWeight: FontWeight.bold,
+                    textAlign: TextAlign.center
                 ),
                 SizedBox(height: height*0.06),
                 Container(
                   width: width*0.8,
-                  child: TextCustom(text: 'E - mail',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal),
+                  child: TextCustom(text: 'E - mail',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal,textAlign: TextAlign.start),
                 ),
                 InputRegister(
                   icons: Icons.height,
@@ -108,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(height: height*0.02),
                 Container(
                   width: width*0.8,
-                  child: TextCustom(text: 'Senha',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal),
+                  child: TextCustom(text: 'Senha',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal,textAlign: TextAlign.start),
                 ),
                 InputPassword(
                   showPassword: visibiblePassword,

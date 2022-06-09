@@ -12,17 +12,13 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
 
   final _controllerSearch = TextEditingController();
-  var _controllerAddress = StreamController<QuerySnapshot>.broadcast();
   var _controllerItems = StreamController<QuerySnapshot>.broadcast();
   FirebaseFirestore db = FirebaseFirestore.instance;
   List _resultsList = [];
   List _allResults = [];
+  int productLength=0;
 
   _data() async {
-    Stream<QuerySnapshot> stream = db.collection("user").where('idUser',isEqualTo: FirebaseAuth.instance.currentUser?.uid).snapshots();
-    stream.listen((data) {
-      _controllerAddress.add(data);
-    });
 
     var data = await db.collection("enterprise").where('type', isEqualTo: TextConst.ENTERPRISE).get();
 
@@ -61,6 +57,14 @@ class _HomeScreenState extends State<HomeScreen> {
     }else{
       _data();
     }
+  }
+
+   produts(String idUser)async{
+    var data =await db.collection("products").where('idUser', isEqualTo: idUser).get();
+    List _allResults = data.docs;
+    productLength = _allResults.length;
+    
+    db.collection('enterprise').doc(idUser).update({'products': productLength});
   }
 
   @override
@@ -121,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         decoration: InputDecoration(
                             border: InputBorder.none,
-                            hintText: 'Pesquisar produto',
+                            hintText: 'Pesquisar estabelecimento',
                             hintStyle: TextStyle(
                               color: PaletteColor.greyInput,
                               fontSize: 16.0,
@@ -158,8 +162,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       case ConnectionState.done:
                         if(_resultsList.length == 0){
                           return Center(
-                              child: Text('Produto não encontrado',
-                                style: TextStyle(fontSize: 20,color: PaletteColor.primaryColor),)
+                              child: Text('Estabelecimento não encontrado',
+                                style: TextStyle(fontSize: 16,color: PaletteColor.primaryColor),)
                           );
                         }else {
                           return ListView.builder(
@@ -167,12 +171,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               itemBuilder: (BuildContext context, index) {
                                 DocumentSnapshot item = _resultsList[index];
 
-                                String idUser = ErrorList(item,'idUser');
-                                String name = ErrorList(item,'name');
-                                final urlPhotoProfile = ErrorList(item,'urlPhotoProfile');
-                                final urlPhotoBanner = ErrorList(item,'urlPhotoBanner');
-                                final startHours = ErrorList(item,'startHours');
-                                final finishHours = ErrorList(item,'finishHours');
+                                String idUser = ErrorListText(item,'idUser');
+                                String name = ErrorListText(item,'name');
+                                int products = ErrorListNumber(item,'products');
+                                final urlPhotoProfile = ErrorListText(item,'urlPhotoProfile');
+                                final urlPhotoBanner = ErrorListText(item,'urlPhotoBanner');
+                                final startHours = ErrorListText(item,'startHours');
+                                final finishHours = ErrorListText(item,'finishHours');
+                                final address = ErrorListText(item,'address');
                                 final now= DateTime.now();
                                 int nowFormat = int.parse(DateFormat('HH').format(now));
                                 var status = '-';
@@ -186,18 +192,34 @@ class _HomeScreenState extends State<HomeScreen> {
                                     status = 'Fechado';
                                   }
                                 }
+                                produts(idUser);
 
-                                return CardHome(
-                                  onTap: (){
+                                Arguments args = Arguments(
+                                    idUser:idUser,
+                                    banner: urlPhotoBanner,
+                                    enterpriseName: name,
+                                    enterprisePicture: urlPhotoProfile,
+                                    status: status,
+                                    startHours: startHours,
+                                    finishHours :finishHours,
+                                    address: address,
+                                    quantMista: 0,
+                                    quantDoce: 0,
+                                    quantSalgada: 0,
+                                    byPriceSalgada: '',
+                                    byPriceDoce: '',
+                                    byPriceMista:''
+                                );
 
-                                  },
+                                return products>0? CardHome(
+                                  onTap: ()=>Navigator.pushNamed(context, '/products',arguments: args),
                                   urlPhotoProfile: urlPhotoProfile,
                                   urlPhotoBanner: urlPhotoBanner,
                                   startHours: startHours,
                                   finishHours: finishHours,
                                   name: name.toUpperCase(),
                                   status: status,
-                                );
+                                ):Container();
                               }
                           );
                         }

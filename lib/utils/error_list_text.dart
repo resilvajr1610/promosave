@@ -1,6 +1,6 @@
 import '../utils/export.dart';
 
-String ErrorList(item,type){
+String ErrorListText(item,type){
   String text;
   try {
   dynamic data = item.get(FieldPath([type]));

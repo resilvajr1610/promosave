@@ -1,4 +1,4 @@
-import 'export.dart';
+import '../utils/export.dart';
 
 class Routes{
     static Route<dynamic>? generateRoute(RouteSettings settings){
@@ -32,6 +32,14 @@ class Routes{
         case "/profile" :
           return MaterialPageRoute(
               builder: (_) => ProfileScreen()
+          );
+        case "/shopping" :
+          return MaterialPageRoute(
+              builder: (_) => ShoppingScreen(args: args as Arguments)
+          );
+        case "/products" :
+          return MaterialPageRoute(
+              builder: (_) => ProductsScreen(args: args as Arguments)
           );
         default :
           _erroRota();

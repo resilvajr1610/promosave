@@ -1,4 +1,4 @@
-import '../Utils/export.dart';
+import '../utils/export.dart';
 
 class InputRegister extends StatelessWidget {
 

@@ -10,6 +10,8 @@ export '../views/maps_screen.dart';
 export '../views/requests_screen.dart';
 export '../views/navigation_screen.dart';
 export '../views/profile_screen.dart';
+export '../views/products_screen.dart';
+export '../views/shopping_screen.dart';
 
 export '../widgets/buttom_custom.dart';
 export '../widgets/inputRegister.dart';
@@ -22,14 +24,19 @@ export '../widgets/rating_custom.dart';
 export '../widgets/drawer_custom.dart';
 export '../widgets/title_drawer.dart';
 export '../widgets/text_custom_address.dart';
+export '../widgets/back_buttom.dart';
+export '../widgets/card_products.dart';
+export '../widgets/bottom_sheet_custom.dart';
 
 export '../models/user_model.dart';
 export '../models/search_model.dart';
+export '../models/arguments.dart';
 
 export 'colors.dart';
 export 'routes.dart';
 export 'text_const.dart';
-export 'error_list.dart';
+export 'error_list_text.dart';
+export 'error_list_number.dart';
 
 export 'dart:convert';
 export 'package:firebase_auth/firebase_auth.dart';
@@ -38,3 +45,4 @@ export 'package:cloud_firestore/cloud_firestore.dart';
 export 'package:flutter/services.dart';
 export 'package:brasil_fields/brasil_fields.dart';
 export 'package:smooth_star_rating_nsafe/smooth_star_rating.dart';
+export 'package:cloud_firestore/cloud_firestore.dart';

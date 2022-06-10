@@ -1,3 +1,6 @@
+
+import 'package:promosave/models/shopping_model.dart';
+
 import '../utils/export.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -9,6 +12,78 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
 
   final _controllerPhone = TextEditingController();
+  FirebaseStorage storage = FirebaseStorage.instance;
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  final photo = FirebaseAuth.instance.currentUser!.photoURL;
+  String urlPhotoProfile="";
+  File? picture;
+  bool _sending = false;
+
+  _data()async{
+    DocumentSnapshot snapshot = await db.collection("user")
+        .doc(FirebaseAuth.instance.currentUser!.uid).get();
+  }
+
+  Future _savePhoto(String name) async {
+    try {
+      final image = await ImagePicker()
+          .pickImage(source: ImageSource.camera, imageQuality: 100);
+      if (image == null) return;
+
+      final imageTemporary = File(image.path);
+      setState(() {
+        this.picture = imageTemporary;
+        setState(() {
+          _sending = true;
+        });
+        _uploadImage(name);
+      });
+    } on PlatformException catch (e) {
+      print('Error : $e');
+    }
+  }
+
+  Future _uploadImage(String name) async {
+    Reference pastaRaiz = storage.ref();
+    Reference arquivo = pastaRaiz.child("client").child(name+"_"+DateTime.now().toString()+".jpg");
+
+    UploadTask task = arquivo.putFile(picture!);
+
+    Future.delayed(const Duration(seconds: 5), () async {
+      String urlImage = await task.snapshot.ref.getDownloadURL();
+      if (urlImage != null) {
+        setState(() {
+          urlPhotoProfile = urlImage;
+          User? user = FirebaseAuth.instance.currentUser;
+          user?.updatePhotoURL(urlPhotoProfile);
+        });
+        _urlImageFirestore(urlImage,name);
+      }
+    });
+  }
+
+  _urlImageFirestore(String url,String name) {
+
+    Map<String, dynamic> dateUpdate = {
+      name: url,
+    };
+
+    db
+        .collection("user")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .update(dateUpdate)
+        .then((value) {
+      setState(() {
+        _sending = false;
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _data();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +92,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     double height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      drawer: DrawerCustom(),
+      drawer: DrawerCustom(
+        enterprise: FirebaseAuth.instance.currentUser!.displayName!,
+        photo: FirebaseAuth.instance.currentUser!.photoURL,
+      ),
       backgroundColor: PaletteColor.white,
       appBar: AppBar(
         elevation: 0,
@@ -32,16 +110,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CircleAvatar(
-                  radius: 48,
-                  backgroundColor: PaletteColor.primaryColor,
-                  backgroundImage: AssetImage('assets/image/logo.png'),
+              _sending==false? GestureDetector(
+                onTap: ()=>_savePhoto('urlPhotoProfile'),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: photo==null ? CircleAvatar(
+                      radius: 48,
+                      backgroundColor: PaletteColor.primaryColor,
+                      backgroundImage: AssetImage('assets/image/logo.png')
+                  ):CircleAvatar(
+                    radius: 48,
+                    backgroundColor: PaletteColor.primaryColor,
+                    backgroundImage: NetworkImage(photo!),
+                  ),
                 ),
-              ),
-              TextCustom(text: 'Guilia Maria', size: 14.0, color: PaletteColor.greyInput, fontWeight: FontWeight.bold,textAlign: TextAlign.center),
-              TextCustom(text: 'giuliamaria@gmail.com', size: 14.0, color: PaletteColor.greyInput, fontWeight: FontWeight.bold,textAlign: TextAlign.center),
+              ):CircularProgressIndicator(),
+              TextCustom(text: FirebaseAuth.instance.currentUser!.displayName!, size: 14.0, color: PaletteColor.greyInput, fontWeight: FontWeight.bold,textAlign: TextAlign.center),
+              TextCustom(text: FirebaseAuth.instance.currentUser!.email!, size: 14.0, color: PaletteColor.greyInput, fontWeight: FontWeight.bold,textAlign: TextAlign.center),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [

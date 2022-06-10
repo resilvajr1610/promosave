@@ -81,7 +81,10 @@ class _HomeScreenState extends State<HomeScreen> {
     double height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      drawer: DrawerCustom(),
+      drawer: DrawerCustom(
+        enterprise: FirebaseAuth.instance.currentUser!.displayName!,
+        photo: FirebaseAuth.instance.currentUser!.photoURL,
+      ),
       backgroundColor: PaletteColor.white,
       appBar: AppBar(
         elevation: 0,

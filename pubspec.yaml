@@ -19,6 +19,7 @@ dependencies:
   brasil_fields: ^1.4.4
   smooth_star_rating_nsafe: ^1.0.0+1
   intl: ^0.17.0
+  image_picker: ^0.8.3+1
 
 dev_dependencies:
   flutter_test:

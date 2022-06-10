@@ -2,6 +2,11 @@ import '../utils/export.dart';
 
 class DrawerCustom extends StatelessWidget {
 
+  String enterprise;
+  final photo;
+
+  DrawerCustom({required this.enterprise, required this.photo});
+
   @override
   Widget build(BuildContext context) {
 
@@ -21,12 +26,15 @@ class DrawerCustom extends StatelessWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: CircleAvatar(
+                    child: photo==null ? CircleAvatar(
+                        backgroundColor: PaletteColor.primaryColor,
+                        backgroundImage: AssetImage('assets/image/logo.png')
+                    ):CircleAvatar(
                       backgroundColor: PaletteColor.primaryColor,
-                      backgroundImage: AssetImage('assets/image/logo.png'),
+                      backgroundImage: NetworkImage(photo),
                     ),
                   ),
-                  TextCustom(text: 'Guilia Maria', size: 16.0, color: PaletteColor.primaryColor, fontWeight: FontWeight.bold,textAlign: TextAlign.center)
+                  TextCustom(text: enterprise.toUpperCase(), size: 16.0, color: PaletteColor.primaryColor, fontWeight: FontWeight.bold,textAlign: TextAlign.center)
                 ],
               ),
             ),

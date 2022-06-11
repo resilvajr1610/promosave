@@ -1,27 +1,85 @@
-
+import 'package:google_place/google_place.dart';
 import 'package:promosave/models/shopping_model.dart';
-
 import '../utils/export.dart';
 
 class ProfileScreen extends StatefulWidget {
-
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-
-  final _controllerPhone = TextEditingController();
+  var _controllerPhone = TextEditingController();
   FirebaseStorage storage = FirebaseStorage.instance;
   FirebaseFirestore db = FirebaseFirestore.instance;
   final photo = FirebaseAuth.instance.currentUser!.photoURL;
-  String urlPhotoProfile="";
+  String urlPhotoProfile = "";
   File? picture;
   bool _sending = false;
+  String phone = "";
 
-  _data()async{
-    DocumentSnapshot snapshot = await db.collection("user")
-        .doc(FirebaseAuth.instance.currentUser!.uid).get();
+  String Casaaddress = "";
+  String Casacity = "";
+  String Casavillage = "";
+  String Casastreet = "";
+  double Casalat = 0.0;
+  double Casalng = 0.0;
+
+  String Trabalhoaddress = "";
+  String Trabalhocity = "";
+  String Trabalhovillage = "";
+  String Trabalhostreet = "";
+  double Trabalholat = 0.0;
+  double Trabalholng = 0.0;
+
+  String Outroaddress = "";
+  String Outrocity = "";
+  String Outrovillage = "";
+  String Outrostreet = "";
+  double Outrolat = 0.0;
+  double Outrolng = 0.0;
+
+  _showDialog() {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return MyDialog();
+        });
+  }
+
+  _data() async {
+    DocumentSnapshot snapshot = await db
+        .collection("user")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+
+    setState(() {
+      phone = data?["phone"]??"";
+      Casaaddress = data?["Casaaddress"]??"";
+      Casacity = data?["Casacity"]??"";
+      Casalat = data?["Casalat"]??0.0;
+      Casalng = data?["Casalng"]??0.0;
+      Casavillage = data?["Casavillage"]??"";
+      Casastreet = data?["Casastreet"]??"";
+
+      Trabalhoaddress = data?["Trabalhoaddress"]??"";
+      Trabalhocity = data?["Trabalhocity"]??"";
+      Trabalholat = data?["Trabalholat"]??0.0;
+      Trabalholng = data?["Trabalholng"]??0.0;
+      Trabalhovillage = data?["Trabalhovillage"]??"";
+      Trabalhostreet = data?["Trabalhostreet"]??"";
+
+      Outroaddress = data?["Outroaddress"]??"";
+      Outrocity = data?["Outrocity"]??"";
+      Outrolat = data?["Outrolat"]??0.0;
+      Outrolng = data?["Outrolng"]??0.0;
+      Outrovillage = data?["Outrovillage"]??"";
+      Outrostreet = data?["Outrostreet"]??"";
+
+      _controllerPhone = TextEditingController(text: phone);
+    });
   }
 
   Future _savePhoto(String name) async {
@@ -45,7 +103,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future _uploadImage(String name) async {
     Reference pastaRaiz = storage.ref();
-    Reference arquivo = pastaRaiz.child("client").child(name+"_"+DateTime.now().toString()+".jpg");
+    Reference arquivo = pastaRaiz
+        .child("client")
+        .child(name + "_" + DateTime.now().toString() + ".jpg");
 
     UploadTask task = arquivo.putFile(picture!);
 
@@ -57,13 +117,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           User? user = FirebaseAuth.instance.currentUser;
           user?.updatePhotoURL(urlPhotoProfile);
         });
-        _urlImageFirestore(urlImage,name);
+        _urlImageFirestore(urlImage, name);
       }
     });
   }
 
-  _urlImageFirestore(String url,String name) {
-
+  _urlImageFirestore(String url, String name) {
     Map<String, dynamic> dateUpdate = {
       name: url,
     };
@@ -79,6 +138,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
+  deleteAddress(var place){
+    db.collection('user').doc(FirebaseAuth.instance.currentUser!.uid).update({
+      "${place}address":"",
+      "${place}street" :"",
+      "${place}village":"",
+      "${place}city"   :"",
+      "${place}lat"    :0.0,
+      "${place}lng"    :0.0,
+    }).then((value) => Navigator.pushReplacementNamed(context, '/profile'));
+  }
+
   @override
   void initState() {
     super.initState();
@@ -87,7 +157,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
 
@@ -101,7 +170,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         elevation: 0,
         centerTitle: true,
         backgroundColor: PaletteColor.primaryColor,
-        title: TextCustom(text: 'Perfil',size: 24.0,color: PaletteColor.white,fontWeight: FontWeight.bold,textAlign: TextAlign.center),
+        title: TextCustom(
+            text: 'Perfil',
+            size: 24.0,
+            color: PaletteColor.white,
+            fontWeight: FontWeight.bold,
+            textAlign: TextAlign.center),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -110,23 +184,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _sending==false? GestureDetector(
-                onTap: ()=>_savePhoto('urlPhotoProfile'),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: photo==null ? CircleAvatar(
-                      radius: 48,
-                      backgroundColor: PaletteColor.primaryColor,
-                      backgroundImage: AssetImage('assets/image/logo.png')
-                  ):CircleAvatar(
-                    radius: 48,
-                    backgroundColor: PaletteColor.primaryColor,
-                    backgroundImage: NetworkImage(photo!),
-                  ),
-                ),
-              ):CircularProgressIndicator(),
-              TextCustom(text: FirebaseAuth.instance.currentUser!.displayName!, size: 14.0, color: PaletteColor.greyInput, fontWeight: FontWeight.bold,textAlign: TextAlign.center),
-              TextCustom(text: FirebaseAuth.instance.currentUser!.email!, size: 14.0, color: PaletteColor.greyInput, fontWeight: FontWeight.bold,textAlign: TextAlign.center),
+              _sending == false
+                  ? GestureDetector(
+                      onTap: () => _savePhoto('urlPhotoProfile'),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: photo == null
+                            ? CircleAvatar(
+                                radius: 48,
+                                backgroundColor: PaletteColor.primaryColor,
+                                backgroundImage:
+                                    AssetImage('assets/image/logo.png'))
+                            : CircleAvatar(
+                                radius: 48,
+                                backgroundColor: PaletteColor.primaryColor,
+                                backgroundImage: NetworkImage(photo!),
+                              ),
+                      ),
+                    )
+                  : CircularProgressIndicator(),
+              TextCustom(
+                  text: FirebaseAuth.instance.currentUser!.displayName!,
+                  size: 14.0,
+                  color: PaletteColor.greyInput,
+                  fontWeight: FontWeight.bold,
+                  textAlign: TextAlign.center),
+              TextCustom(
+                  text: FirebaseAuth.instance.currentUser!.email!,
+                  size: 14.0,
+                  color: PaletteColor.greyInput,
+                  fontWeight: FontWeight.bold,
+                  textAlign: TextAlign.center),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -145,11 +233,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 Color(0xffF15622),
                                 Color(0xffF8A78B),
                               ],
-                            )
-                        ),
-                        child: Center(child: TextCustom(text: 'R\$\n20', size: 16.0, color: PaletteColor.white, fontWeight: FontWeight.w500,textAlign: TextAlign.center)),
+                            )),
+                        child: Center(
+                            child: TextCustom(
+                                text: 'R\$\n20',
+                                size: 16.0,
+                                color: PaletteColor.white,
+                                fontWeight: FontWeight.w500,
+                                textAlign: TextAlign.center)),
                       ),
-                      TextCustom(text: 'Dinheiro\npoupado', size: 12.0, color: PaletteColor.primaryColor, fontWeight: FontWeight.normal,textAlign: TextAlign.center),
+                      TextCustom(
+                          text: 'Dinheiro\npoupado',
+                          size: 12.0,
+                          color: PaletteColor.primaryColor,
+                          fontWeight: FontWeight.normal,
+                          textAlign: TextAlign.center),
                     ],
                   ),
                   Column(
@@ -167,31 +265,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 Color(0xffF15622),
                                 Color(0xffF8A78B),
                               ],
-                            )
-                        ),
-                        child: Center(child: TextCustom(text: '4', size: 24.0, color: PaletteColor.white, fontWeight: FontWeight.w500,textAlign: TextAlign.center)),
+                            )),
+                        child: Center(
+                            child: TextCustom(
+                                text: '4',
+                                size: 24.0,
+                                color: PaletteColor.white,
+                                fontWeight: FontWeight.w500,
+                                textAlign: TextAlign.center)),
                       ),
-                      TextCustom(text: 'Alimentos\nsalvos', size: 12.0, color: PaletteColor.primaryColor, fontWeight: FontWeight.normal,textAlign: TextAlign.center),
+                      TextCustom(
+                          text: 'Alimentos\nsalvos',
+                          size: 12.0,
+                          color: PaletteColor.primaryColor,
+                          fontWeight: FontWeight.normal,
+                          textAlign: TextAlign.center),
                     ],
                   ),
                 ],
               ),
               Container(
-                width: width,
-                alignment: Alignment.centerLeft,
-                padding: EdgeInsets.all(8),
-                child: TextCustom(text: 'Alterar dados :', size: 16.0, color: PaletteColor.grey, fontWeight: FontWeight.normal,textAlign: TextAlign.center)
-              ),
+                  width: width,
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.all(8),
+                  child: TextCustom(
+                      text: 'Alterar dados :',
+                      size: 16.0,
+                      color: PaletteColor.grey,
+                      fontWeight: FontWeight.normal,
+                      textAlign: TextAlign.center)),
               Container(
                   width: width,
                   alignment: Alignment.centerLeft,
                   padding: EdgeInsets.symmetric(horizontal: 8),
-                  child: TextCustom(text: 'Telefone', size: 14.0, color: PaletteColor.primaryColor, fontWeight: FontWeight.normal,textAlign: TextAlign.center)
-              ),
+                  child: TextCustom(
+                      text: 'Telefone',
+                      size: 14.0,
+                      color: PaletteColor.primaryColor,
+                      fontWeight: FontWeight.normal,
+                      textAlign: TextAlign.center)),
               InputRegister(
                 icons: Icons.height,
                 sizeIcon: 0.0,
-                width: width*0.85,
+                width: width * 0.85,
                 obscure: false,
                 controller: _controllerPhone,
                 hint: '(XX) XXXXX-XXXX',
@@ -205,63 +321,118 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Container(
                   width: width,
                   alignment: Alignment.centerLeft,
-                  padding: EdgeInsets.symmetric(horizontal: 8,vertical: 8),
-                  child: TextCustom(text: 'Endereço', size: 14.0, color: PaletteColor.primaryColor, fontWeight: FontWeight.normal,textAlign: TextAlign.center)
-              ),
-              Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  child: TextCustom(
+                      text: 'Endereço',
+                      size: 14.0,
+                      color: PaletteColor.primaryColor,
+                      fontWeight: FontWeight.normal,
+                      textAlign: TextAlign.center)),
+              Casaaddress != ""
+                  ? Container(
+                      width: width,
+                      alignment: Alignment.centerLeft,
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: Row(
+                        children: [
+                          TextCustomAddress(
+                            address:
+                            Casaaddress,
+                            type: 'Casa',
+                            width: width * 0.7,
+                          ),
+                          Spacer(),
+                          GestureDetector(
+                            onTap: ()=>deleteAddress('Casa'),
+                            child: Icon(
+                              Icons.delete,
+                              color: PaletteColor.primaryColor,
+                            ),
+                          )
+                        ],
+                      ))
+                  : Container(),
+              SizedBox(height: 10),
+              Trabalhoaddress != ""
+                  ? Container(
+                      width: width,
+                      alignment: Alignment.centerLeft,
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: Row(
+                        children: [
+                          TextCustomAddress(
+                            address:
+                            Trabalhoaddress,
+                            type: 'Trabalho',
+                            width: width * 0.7,
+                          ),
+                          Spacer(),
+                          GestureDetector(
+                            onTap: ()=>deleteAddress('Trabalho'),
+                            child: Icon(
+                              Icons.delete,
+                              color: PaletteColor.primaryColor,
+                            ),
+                          )
+                        ],
+                      ))
+                  : Container(),
+              SizedBox(height: 10),
+              Outroaddress != ""
+                  ? Container(
                   width: width,
                   alignment: Alignment.centerLeft,
                   padding: EdgeInsets.symmetric(horizontal: 8),
-                  child:  Row(
+                  child: Row(
                     children: [
                       TextCustomAddress(
-                        address: 'Rua Antonio Almeida, 55, Centro São Paulo/SP',
-                        type: 'Casa',
-                        width: width*0.7,
+                        address:
+                        Outroaddress,
+                        type: 'Outro',
+                        width: width * 0.7,
                       ),
                       Spacer(),
-                      Icon(Icons.delete,color: PaletteColor.primaryColor,)
+                      GestureDetector(
+                        onTap: ()=>deleteAddress('Outro'),
+                        child: Icon(
+                          Icons.delete,
+                          color: PaletteColor.primaryColor,
+                        ),
+                      )
                     ],
-                  )
-              ),
+                  ))
+                  : Container(),
               SizedBox(height: 10),
-              Container(
-                  width: width,
-                  alignment: Alignment.centerLeft,
-                  padding: EdgeInsets.symmetric(horizontal: 8),
-                  child:  Row(
-                    children: [
-                      TextCustomAddress(
-                        address: 'Avenida Monteiro Lobato, 130, Parque Alagoas - São Paulo/SP',
-                        type: 'Trabalho',
-                        width: width*0.7,
-                      ),
-                      Spacer(),
-                      Icon(Icons.delete,color: PaletteColor.primaryColor,)
-                    ],
-                  )
-              ),
-              SizedBox(height: 10),
-              Row(
-                children: [
-                  Container(
-                    alignment: Alignment.topCenter,
-                    width: width*0.6,
-                    padding: EdgeInsets.all(10),
-                    margin: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
-                    decoration: BoxDecoration(
-                        color: PaletteColor.greyLight,
-                        borderRadius: BorderRadius.circular(5)
-                    ),
-                    child: TextCustom(size: 14.0, fontWeight: FontWeight.normal, color: PaletteColor.grey, text: 'Adicionar novo endereço',textAlign: TextAlign.center),
-                  ),
-                  Spacer()
-                ],
-              ),
+              Casaaddress == "" || Trabalhoaddress == "" || Outrostreet == ""
+                  ? Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () => _showDialog(),
+                          child: Container(
+                            alignment: Alignment.topCenter,
+                            width: width * 0.6,
+                            padding: EdgeInsets.all(10),
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                                color: PaletteColor.greyLight,
+                                borderRadius: BorderRadius.circular(5)),
+                            child: TextCustom(
+                                size: 14.0,
+                                fontWeight: FontWeight.normal,
+                                color: PaletteColor.grey,
+                                text: 'Adicionar novo endereço',
+                                textAlign: TextAlign.center),
+                          ),
+                        ),
+                        Spacer()
+                      ],
+                    )
+                  : Container(),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ButtonCustom(
-                  onPressed: (){},
+                  onPressed: () {},
                   text: "Salvar",
                   size: 0,
                   colorButton: PaletteColor.primaryColor,
@@ -271,6 +442,261 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class MyDialog extends StatefulWidget {
+  @override
+  _MyDialogState createState() => new _MyDialogState();
+}
+
+class _MyDialogState extends State<MyDialog> {
+
+  var _controllerAddress = TextEditingController();
+  String addressHome = "";
+  String addressWork = "";
+  String addressOther = "";
+  String city = "";
+  String village = "";
+  String street = "";
+  late GooglePlace googlePlace;
+  List<AutocompletePrediction> predictions = [];
+  String apikey = 'AIzaSyBrOfzJKgCwsbPxmc9cSQ6DptcQvluZQFQ';
+  var result;
+  Timer? _debounce;
+  DetailsResult? startPosition;
+  late FocusNode? startFocusNode;
+  double lat = 0.0;
+  double lng = 0.0;
+  List titleRadio=['Casa','Trabalho','Outro'];
+  int selectedRadioButton=0;
+  String selectedText='Casa';
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  FirebaseFirestore db = FirebaseFirestore.instance;
+
+  void autoCompleteSearch(String value) async {
+    result = await googlePlace.autocomplete.get(value);
+    if (result != null && result.predictions != null && mounted) {
+      setState(() {
+        predictions = result.predictions!;
+      });
+    }
+  }
+
+  _verification(){
+
+    if(_controllerAddress.text.isNotEmpty){
+
+      _saveData();
+
+    }else{
+      setState(() {
+        showSnackBar(context, 'verifique seu endereço', _scaffoldKey);
+      });
+    }
+  }
+
+  _saveData(){
+    db.collection("user").doc(FirebaseAuth.instance.currentUser!.uid).update({
+
+      "${selectedText}address":_controllerAddress.text,
+      "${selectedText}street" :street,
+      "${selectedText}village":village,
+      "${selectedText}city"   :city,
+      "${selectedText}lat"    :lat,
+      "${selectedText}lng"    :lng,
+
+    }).then((_)
+    => Navigator.pushReplacementNamed(context, '/profile'));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    googlePlace = GooglePlace(apikey);
+    startFocusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    startFocusNode?.dispose();
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+
+    setSelectedRadio(int value){
+      setState(() {
+        selectedRadioButton = value;
+        selectedText = titleRadio[value];
+        print(selectedText);
+      });
+    }
+
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      key: _scaffoldKey,
+      body: SingleChildScrollView(
+        child: AlertDialog(
+          title: Center(
+            child: TextCustom(
+              text: 'Adicionar novo endereço',
+              size: 13.0,
+              color: PaletteColor.grey,
+              fontWeight: FontWeight.bold,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          titleTextStyle: TextStyle(color: PaletteColor.grey, fontSize: 14),
+          content: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        height: 120,
+                        width: width,
+                        child: ListView.builder(
+                            itemCount:titleRadio.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Container(
+                                height: 35,
+                                width: 140,
+                                child: RadioListTile(
+                                  contentPadding: EdgeInsets.all(0),
+                                  value: index,
+                                  groupValue: selectedRadioButton,
+                                  activeColor: PaletteColor.primaryColor,
+                                  title: Container(
+                                      height: 20,
+                                      margin: const EdgeInsets.only(top: 15.0),
+                                      child: TextCustom(text: titleRadio[index],color: PaletteColor.grey,size: 14.0,fontWeight: FontWeight.normal,textAlign: TextAlign.start)
+                                  ),
+                                  subtitle: Text(''),
+                                  onChanged: (value){
+                                    setSelectedRadio(int.parse(value.toString()));
+                                  },
+                                ),
+                              );
+                            }
+                        ),
+                      ),
+                      Container(
+                        alignment: Alignment.topCenter,
+                        width: width * 0.9,
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                            color: PaletteColor.greyLight,
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(
+                              color: PaletteColor.greyLight,
+                            )),
+                        child: TextFormField(
+                          controller: _controllerAddress,
+                          focusNode: startFocusNode,
+                          textAlign: TextAlign.start,
+                          keyboardType: TextInputType.text,
+                          textAlignVertical: TextAlignVertical.center,
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontSize: 14.0,
+                          ),
+                          onChanged: (value) {
+                            if (value.isNotEmpty) {
+                              autoCompleteSearch(value);
+                            }
+                          },
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Rua, Avenida, etc',
+                            hintStyle: TextStyle(
+                              color: Colors.black54,
+                              fontSize: 14.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                      ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: predictions.length,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              leading: Icon(
+                                Icons.location_on,
+                                color: PaletteColor.primaryColor,
+                              ),
+                              title:
+                              Text(predictions[index].description.toString()),
+                              onTap: () async {
+                                final placeId = predictions[index].placeId;
+                                final details =
+                                await googlePlace.details.get(placeId!);
+                                if (details != null &&
+                                    details.result != null &&
+                                    mounted) {
+                                  setState(() {
+                                    startPosition = details.result;
+                                    _controllerAddress.text = details.result!.name!;
+                                    lat = startPosition!.geometry!.location!.lat!;
+                                    lng = startPosition!.geometry!.location!.lng!;
+                                    final completeAddress =
+                                    startPosition!.adrAddress!;
+                                    final splittedStart =
+                                    completeAddress.split('>');
+                                    street =
+                                        splittedStart[1].replaceAll('</span', '');
+                                    village =
+                                        splittedStart[3].replaceAll('</span', '');
+                                    city =
+                                        splittedStart[5].replaceAll('</span', '');
+
+                                    print("Street :     " + street.toString());
+                                    print("village :  " + village);
+                                    print("city :    " + city);
+                                    predictions = [];
+                                  });
+                                }
+                              },
+                            );
+                          }),
+                ]);
+              }),
+          contentPadding: EdgeInsets.symmetric(horizontal: 5, vertical: 0),
+          actionsAlignment: MainAxisAlignment.center,
+          titlePadding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+          actions: [
+            Container(
+              width: width * 0.3,
+              child: ButtonCustom(
+                text: 'Salvar',
+                colorText: PaletteColor.white,
+                colorBorder: PaletteColor.primaryColor,
+                onPressed: ()=>_verification(),
+                size: 14.0,
+                colorButton: PaletteColor.primaryColor,
+              ),
+            ),
+            Container(
+              width: width * 0.3,
+              child: ButtonCustom(
+                text: 'Cancelar',
+                colorText: PaletteColor.white,
+                colorBorder: PaletteColor.greyInput,
+                onPressed: () => Navigator.pop(context),
+                size: 14.0,
+                colorButton: PaletteColor.greyInput,
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -1,4 +1,4 @@
-import 'package:promosave/utils/export.dart';
+import '../utils/export.dart';
 
 void main()async{
 
@@ -9,7 +9,7 @@ void main()async{
 
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: SplashScreen(),
+    //home: SplashScreen(),
     initialRoute:route,
     onGenerateRoute: Routes.generateRoute,
   ));

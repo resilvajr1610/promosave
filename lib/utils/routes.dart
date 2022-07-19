@@ -41,6 +41,10 @@ class Routes{
           return MaterialPageRoute(
               builder: (_) => ProductsScreen(args: args as Arguments)
           );
+        case "/questions" :
+          return MaterialPageRoute(
+              builder: (_) => QuestionsScreen()
+          );
         default :
           _erroRota();
       }

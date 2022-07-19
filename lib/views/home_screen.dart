@@ -53,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
   userFirebase ()async{
     String user = await FirebaseAuth.instance.currentUser!.uid;
     if( user==null){
-      Navigator.pushReplacementNamed(context, "/login");
+      Navigator.pushReplacementNamed(context, "/initial");
     }else{
       _data();
     }

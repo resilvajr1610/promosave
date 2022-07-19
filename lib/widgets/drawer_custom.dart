@@ -50,7 +50,7 @@ class DrawerCustom extends StatelessWidget {
               icon: Icons.account_circle_outlined,
             ),
             TitleDrawer(
-                onTap: (){},
+              onTap: ()=>Navigator.pushNamed(context, '/questions'),
                 title: 'Perguntas frequentes',
                 icon: Icons.help_outline,
             ),

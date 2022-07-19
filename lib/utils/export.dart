@@ -13,6 +13,7 @@ export '../views/navigation_screen.dart';
 export '../views/profile_screen.dart';
 export '../views/products_screen.dart';
 export '../views/shopping_screen.dart';
+export '../views/questions_screen.dart';
 
 export '../widgets/buttom_custom.dart';
 export '../widgets/inputRegister.dart';
@@ -28,10 +29,13 @@ export '../widgets/text_custom_address.dart';
 export '../widgets/back_buttom.dart';
 export '../widgets/card_products.dart';
 export '../widgets/bottom_sheet_custom.dart';
+export '../widgets/container_question.dart';
 
 export '../models/user_model.dart';
 export '../models/search_model.dart';
 export '../models/arguments.dart';
+export '../models/question_model.dart';
+export '../models/search_question_model.dart';
 
 export 'colors.dart';
 export 'routes.dart';
@@ -49,3 +53,4 @@ export 'package:smooth_star_rating_nsafe/smooth_star_rating.dart';
 export 'package:cloud_firestore/cloud_firestore.dart';
 export 'package:image_picker/image_picker.dart';
 export 'package:firebase_storage/firebase_storage.dart';
+export 'package:font_awesome_flutter/font_awesome_flutter.dart';

@@ -4,6 +4,7 @@ class TextConst{
 
   static const ENTERPRISE = 'ENTERPRISE';
   static const DELIVERYMAN = 'DELIVERYMAN';
+  static const CLIENT = 'client';
 
   static const SHOPPING = 'SHOPPING';
 

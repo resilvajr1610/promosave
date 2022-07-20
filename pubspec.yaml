@@ -23,6 +23,8 @@ dependencies:
   google_place: ^0.4.7
   auto_size_text: ^3.0.0
   font_awesome_flutter: ^10.1.0
+  google_maps_flutter: ^2.1.4
+  geolocator: ^8.2.1
 
 dev_dependencies:
   flutter_test:

@@ -30,7 +30,9 @@ export '../widgets/back_buttom.dart';
 export '../widgets/card_products.dart';
 export '../widgets/bottom_sheet_custom.dart';
 export '../widgets/container_question.dart';
+export '../widgets/CarrosselProfessionals.dart';
 
+export '../models/error_string_model.dart';
 export '../models/user_model.dart';
 export '../models/search_model.dart';
 export '../models/arguments.dart';

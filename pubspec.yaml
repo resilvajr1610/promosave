@@ -27,6 +27,7 @@ dependencies:
   geolocator: ^8.2.1
   url_launcher: ^6.0.15
   permission_handler: ^8.1.4+2
+  mercado_pago_mobile_checkout: ^0.1.0
 
 dev_dependencies:
   flutter_test:

@@ -1,3 +1,5 @@
+import 'package:mercado_pago_mobile_checkout/mercado_pago_mobile_checkout.dart';
+import 'package:http/http.dart' as http;
 import '../models/shopping_model.dart';
 import '../utils/export.dart';
 
@@ -30,6 +32,8 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
   String selectedTextAddress='Casa - Rua Antonio Almeida, 55, Centro São Paulo/SP';
   int selectedRadioButton=0;
   int selectedRadioButtonAddress=0;
+  String _publicKey = "TEST-bcf6f11a-2a2b-4126-a324-de528297749d";
+  String _idPagamento='';
 
   _data(){
     contSalgada = widget.args.quantSalgada;
@@ -101,11 +105,69 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
       }
     }
 
+    Future<void> _getPagamento()async{
+      var res = await http.post(Uri.parse("https://api.mercadopago.com/checkout/preferences?access_token=TEST-2683868701623096-072020-96a1e551de175cc6875591aff881addf-10733880"),
+          body: jsonEncode(
+              {
+                "items": [
+                  {
+                    "title": "Promo Save",
+                    "description": "Acesso Mensal MedQuest",
+                    "quantity": 1,
+                    "currency_id": "ARS",
+                    "unit_price": total
+                  }
+                ],
+                "payer": {
+                  "email": "medquest@medquest.com"
+                }
+              }
+          )
+      );
+      //print(res.body);
+      var json = jsonDecode(res.body);
+      _idPagamento = json['id'];
+    }
+
+    _salvarPagamento()async{
+
+      // Usuario usuario = Usuario();
+      //
+      // usuario.pagamento = pagamento;
+      // usuario.dataPagamento = DateTime.now().toString();
+      // FirebaseAuth auth = FirebaseAuth.instance;
+      // FirebaseUser usuarioLogado = await auth.currentUser();
+      // _idUsuarioLogado = usuarioLogado.uid;
+      // Firestore db = Firestore.instance;
+      // Map<String,dynamic> dadosAtualizar = {
+      //   "pagamento" : pagamento,
+      //   "dataVencimento" : usuario.dataVencimento,
+      //   "dataPagamento" : usuario.dataPagamento
+      // };
+      // db.collection("usuarios")
+      //     .document(_idUsuarioLogado)
+      //     .updateData(dadosAtualizar);
+
+      Navigator.pushReplacementNamed(context,'/splash');
+    }
+
     return Scaffold(
       bottomSheet: BottomSheetCustom(
         text: 'Pagamento',
         sizeIcon: 0.0,
-        onTap: (){},
+        onTap: ()async{
+          _getPagamento();
+          PaymentResult result =
+              await MercadoPagoMobileCheckout.startCheckout(
+            _publicKey,
+            _idPagamento,
+          );
+          //print(result.toString());
+          if(result.status == "approved"){
+            //print("SAIDA : " + result.status.toString());
+            _salvarPagamento();
+          }
+        },
       ),
       body: Column(
         children: [

@@ -55,7 +55,7 @@ class DrawerCustom extends StatelessWidget {
                 icon: Icons.help_outline,
             ),
             TitleDrawer(
-                onTap: (){},
+              onTap: ()=>Navigator.pushNamed(context, "/who"),
                 title: 'Quem Somos',
                 icon: Icons.people_outline,
             ),

@@ -1,3 +1,5 @@
+import 'package:promosave/views/who_we_are_screen.dart';
+
 import '../utils/export.dart';
 
 class Routes{
@@ -44,6 +46,10 @@ class Routes{
         case "/questions" :
           return MaterialPageRoute(
               builder: (_) => QuestionsScreen()
+          );
+        case "/who" :
+          return MaterialPageRoute(
+              builder: (_) => WhoWeAreScreen()
           );
         default :
           _erroRota();

@@ -29,9 +29,29 @@ class _SplashScreenState extends State<SplashScreen> {
       });
     }
   }
+
+  permissoes() async {
+    var galeriaStatus = await Permission.accessMediaLocation.status;
+    var notificacao = await Permission.notification.status;
+    var imagem = await Permission.storage.status;
+    var internet = await Permission.photos.status;
+    var localizacao = await Permission.location.status;
+    var localizacaoSegundoPlano = await Permission.locationAlways.status;
+
+    if (!galeriaStatus.isGranted)
+      await Permission.accessMediaLocation.request();
+    if (!notificacao.isGranted) await Permission.notification.request();
+    if (!imagem.isGranted) await Permission.storage.request();
+    if (!internet.isGranted) await Permission.photos.request();
+    if (!localizacao.isGranted) await Permission.location.request();
+    if (!localizacaoSegundoPlano.isGranted)
+      await Permission.locationAlways.request();
+  }
+
   @override
   void initState() {
     super.initState();
+    permissoes();
     _mockCheckForSession();
   }
 

@@ -1,3 +1,4 @@
+import 'package:geolocator/geolocator.dart';
 import '../models/shopping_model.dart';
 import '../utils/export.dart';
 
@@ -21,6 +22,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
   String byPriceSalgada='0';
   String byPriceMista='0';
   String byPriceDoce='0';
+  double feesKm=0.0;
+  double distanceFees=0.0;
+  double total=0.0;
 
   _data() async {
     var data = await db
@@ -34,10 +38,46 @@ class _ProductsScreenState extends State<ProductsScreen> {
     return "complete";
   }
 
+  _feesFirebase()async{
+    DocumentSnapshot snapshot = await db
+        .collection("fees").doc('fees').get();
+    Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+    setState(() {
+      feesKm = double.parse(data?["feesKm"].replaceAll(',', '.'));
+      _fees();
+    });
+  }
+
+  _fees()async{
+
+    Position? position = await Geolocator.getLastKnownPosition();
+
+    double distance = await Geolocator.distanceBetween(widget.args.lat,widget.args.lgn,position!.latitude,position!.longitude);
+
+    setState(() {
+      distanceFees = distance /1000;
+      total = distanceFees*feesKm;
+    });
+  }
+
+  void launchGoogleMaps(double lat, double lng) async {
+    var url = 'google.navigation:q=${lat.toString()},${lng.toString()}';
+    var fallbackUrl = 'https://www.google.com/maps/search/?api=1&query=${lat.toString()},${lng.toString()}';
+    try {
+      bool launched = await launch(url, forceSafariVC: false, forceWebView: false);
+      if (!launched) {
+        await launch(fallbackUrl, forceSafariVC: false, forceWebView: false);
+      }
+    } catch (e) {
+      await launch(fallbackUrl, forceSafariVC: false, forceWebView: false);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _data();
+    _feesFirebase();
   }
 
   @override
@@ -54,20 +94,23 @@ class _ProductsScreenState extends State<ProductsScreen> {
             if(quantSalgada>0 || quantMista>0 || quantDoce>0){
 
               Arguments args = Arguments(
-                  idUser: widget.args.idUser,
-                  banner: widget.args.banner,
-                  enterpriseName:  widget.args.enterpriseName,
-                  enterprisePicture:  widget.args.enterprisePicture,
-                  status: widget.args.status,
-                  startHours:  widget.args.startHours,
-                  finishHours :widget.args.finishHours,
-                  address:  widget.args.address,
-                  quantMista: quantMista,
-                  quantDoce: quantDoce,
-                  quantSalgada: quantSalgada,
-                  byPriceSalgada: byPriceSalgada,
-                  byPriceDoce: byPriceDoce,
-                  byPriceMista:byPriceMista
+                idUser: widget.args.idUser,
+                banner: widget.args.banner,
+                enterpriseName:  widget.args.enterpriseName,
+                enterprisePicture:  widget.args.enterprisePicture,
+                status: widget.args.status,
+                startHours:  widget.args.startHours,
+                finishHours :widget.args.finishHours,
+                address:  widget.args.address,
+                quantMista: quantMista,
+                quantDoce: quantDoce,
+                quantSalgada: quantSalgada,
+                byPriceSalgada: byPriceSalgada,
+                byPriceDoce: byPriceDoce,
+                byPriceMista:byPriceMista,
+                lat: widget.args.lat,
+                lgn: widget.args.lgn,
+                feesKm: total
               );
 
               Navigator.pushNamed(context, '/shopping',arguments: args);
@@ -114,9 +157,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
                             : TextConst.LOGO),
                   ),
                 ),
-                Padding(
+                Container(
+                  width: width*0.35,
                   padding: const EdgeInsets.symmetric(vertical: 35),
                   child: TextCustom(
+                      maxLines: 2,
                       fontWeight: FontWeight.bold,
                       color: PaletteColor.grey,
                       text: widget.args.enterpriseName.toUpperCase(),
@@ -166,7 +211,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       padding: EdgeInsets.symmetric(horizontal: 20),
                       width: width * 0.6,
                       child: TextCustom(
-                          text: 'Taxa de entrega : R\$ 00,00',
+                          text: 'Taxa de entrega : R\$ ${total.toStringAsFixed(2).replaceAll('.', ',')}',
                           fontWeight: FontWeight.normal,
                           color: PaletteColor.grey,
                           size: 12.0,
@@ -175,7 +220,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   ],
                 ),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: ()=>launchGoogleMaps(widget.args.lat, widget.args.lgn),
                   child: Padding(
                     padding: const EdgeInsets.only(right: 12.0),
                     child: Column(
@@ -204,7 +249,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
             Container(
               padding: EdgeInsets.only(bottom: 50),
               alignment: Alignment.topLeft,
-              height: height * 0.5,
+              height: height * 0.45,
               child: StreamBuilder(
                 stream: _controllerItems.stream,
                 builder: (context, snapshot) {
@@ -227,18 +272,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
                               DocumentSnapshot item = _allResults[index];
 
                               String idUser = ErrorListText(item, 'idUser');
-                              String idProduct =
-                                  ErrorListText(item, 'idProduct');
-                              final available =
-                                  ErrorListNumber(item, 'available');
+                              String idProduct = ErrorListText(item, 'idProduct');
+                              final available = ErrorListNumber(item, 'available');
                               final byPrice = ErrorListText(item, 'byPrice');
                               final inPrice = ErrorListText(item, 'inPrice');
-                              final description =
-                                  ErrorListText(item, 'description');
+                              final description = ErrorListText(item, 'description');
                               final photoUrl = ErrorListText(item, 'photoUrl');
                               final product = ErrorListText(item, 'product');
-                              final quantBag =
-                                  ErrorListNumber(item, 'quantBag');
+                              final quantBag = ErrorListNumber(item, 'quantBag');
 
                               return CardProducts(
                                 onTapMore: (){

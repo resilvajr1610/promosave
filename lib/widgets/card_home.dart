@@ -41,7 +41,7 @@ class CardHome extends StatelessWidget {
           width: width*0.5,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: PaletteColor.grey,
+            color: PaletteColor.greyLight,
             image: DecorationImage(
               image: NetworkImage(urlPhotoBanner!=""?urlPhotoBanner:TextConst.BANNER),
               alignment: urlPhotoBanner!=""?Alignment.center:Alignment.topCenter,

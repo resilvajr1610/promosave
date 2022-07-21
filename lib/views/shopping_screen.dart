@@ -41,7 +41,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
     totalDoce = contDoce*valueDoce;
     totalMista = contMista*valueMista;
     totalSalgada = contSalgada*valueSalgada;
-    total = totalSalgada + totalMista + totalDoce;
+    total = totalSalgada + totalMista + totalDoce + widget.args.feesKm;
   }
 
   _saveShopping()async{
@@ -73,6 +73,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
 
     setSelectedRadio(int value){
       setState(() {
+        total = value==0?total + widget.args.feesKm:total - widget.args.feesKm;
         selectedRadioButton = value;
         selectedText = titleRadio[value];
         print(selectedText);
@@ -85,6 +86,19 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
         selectedTextAddress = titleRadioAddress[value];
         print(selectedTextAddress);
       });
+    }
+
+    void launchGoogleMaps(double lat, double lng) async {
+      var url = 'google.navigation:q=${lat.toString()},${lng.toString()}';
+      var fallbackUrl = 'https://www.google.com/maps/search/?api=1&query=${lat.toString()},${lng.toString()}';
+      try {
+        bool launched = await launch(url, forceSafariVC: false, forceWebView: false);
+        if (!launched) {
+          await launch(fallbackUrl, forceSafariVC: false, forceWebView: false);
+        }
+      } catch (e) {
+        await launch(fallbackUrl, forceSafariVC: false, forceWebView: false);
+      }
     }
 
     return Scaffold(
@@ -131,14 +145,16 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                           : TextConst.LOGO),
                 ),
               ),
-              Padding(
+              Container(
+                width: width*0.35,
                 padding: const EdgeInsets.symmetric(vertical: 35),
                 child: TextCustom(
-                    fontWeight: FontWeight.bold,
-                    color: PaletteColor.grey,
-                    text: widget.args.enterpriseName.toUpperCase(),
-                    size: 14.0,
-                    textAlign: TextAlign.start),
+                  maxLines: 2,
+                  fontWeight: FontWeight.bold,
+                  color: PaletteColor.grey,
+                  text: widget.args.enterpriseName.toUpperCase(),
+                  size: 14.0,
+                  textAlign: TextAlign.start),
               ),
               Spacer(),
               Padding(
@@ -167,8 +183,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                         color: PaletteColor.primaryColor,
                         size: 12.0,
                         textAlign: TextAlign.start),
-                  )
-                      : Container(),
+                  ): Container(),
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     width: width * 0.6,
@@ -183,7 +198,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     width: width * 0.6,
                     child: TextCustom(
-                        text: 'Taxa de entrega : R\$ 00,00',
+                        text: 'Taxa de entrega : R\$ ${widget.args.feesKm.toStringAsFixed(2).replaceAll('.', ',')}',
                         fontWeight: FontWeight.normal,
                         color: PaletteColor.grey,
                         size: 12.0,
@@ -192,7 +207,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                 ],
               ),
               GestureDetector(
-                onTap: () {},
+                onTap: ()=>launchGoogleMaps(widget.args.lat, widget.args.lgn),
                 child: Padding(
                   padding: const EdgeInsets.only(right: 12.0),
                   child: Column(
@@ -311,7 +326,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                 ),
                 Spacer(),
                 TextCustom(
-                    text: ('R\$ 00,00'),
+                    text: ('R\$ ${widget.args.feesKm.toStringAsFixed(2).replaceAll('.', ',')}'),
                     fontWeight: FontWeight.normal,
                     color: PaletteColor.grey,
                     size: 12.0,

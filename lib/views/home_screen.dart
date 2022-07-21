@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:promosave/models/error_double_model.dart';
 
 import '../utils/export.dart';
 
@@ -174,14 +175,16 @@ class _HomeScreenState extends State<HomeScreen> {
                               itemBuilder: (BuildContext context, index) {
                                 DocumentSnapshot item = _resultsList[index];
 
-                                String idUser = ErrorListText(item,'idUser');
-                                String name = ErrorListText(item,'name');
+                                String idUser = ErrorStringModel(item,'idUser');
+                                String name = ErrorStringModel(item,'name');
                                 int products = ErrorListNumber(item,'products');
-                                final urlPhotoProfile = ErrorListText(item,'urlPhotoProfile');
-                                final urlPhotoBanner = ErrorListText(item,'urlPhotoBanner');
-                                final startHours = ErrorListText(item,'startHours');
-                                final finishHours = ErrorListText(item,'finishHours');
-                                final address = ErrorListText(item,'address');
+                                final urlPhotoProfile = ErrorStringModel(item,'urlPhotoProfile');
+                                final urlPhotoBanner = ErrorStringModel(item,'urlPhotoBanner');
+                                final startHours = ErrorStringModel(item,'startHours');
+                                final finishHours = ErrorStringModel(item,'finishHours');
+                                final address = ErrorStringModel(item,'address');
+                                final lat = ErrorDoubleModel(item,'lat');
+                                final lng = ErrorDoubleModel(item,'lng');
                                 final now= DateTime.now();
                                 int nowFormat = int.parse(DateFormat('HH').format(now));
                                 var status = '-';
@@ -198,20 +201,23 @@ class _HomeScreenState extends State<HomeScreen> {
                                 produts(idUser);
 
                                 Arguments args = Arguments(
-                                    idUser:idUser,
-                                    banner: urlPhotoBanner,
-                                    enterpriseName: name,
-                                    enterprisePicture: urlPhotoProfile,
-                                    status: status,
-                                    startHours: startHours,
-                                    finishHours :finishHours,
-                                    address: address,
-                                    quantMista: 0,
-                                    quantDoce: 0,
-                                    quantSalgada: 0,
-                                    byPriceSalgada: '',
-                                    byPriceDoce: '',
-                                    byPriceMista:''
+                                  idUser:idUser,
+                                  banner: urlPhotoBanner,
+                                  enterpriseName: name,
+                                  enterprisePicture: urlPhotoProfile,
+                                  status: status,
+                                  startHours: startHours,
+                                  finishHours :finishHours,
+                                  address: address,
+                                  quantMista: 0,
+                                  quantDoce: 0,
+                                  quantSalgada: 0,
+                                  byPriceSalgada: '',
+                                  byPriceDoce: '',
+                                  byPriceMista:'',
+                                  lat: lat,
+                                  lgn: lng,
+                                  feesKm: 0.0
                                 );
 
                                 return products>0? CardHome(

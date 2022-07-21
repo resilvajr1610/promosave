@@ -13,6 +13,9 @@ class Arguments {
   final int quantDoce;
   final int quantMista;
   final int quantSalgada;
+  final double lat;
+  final double lgn;
+  final double feesKm;
 
   Arguments({
     required this.idUser,
@@ -29,5 +32,8 @@ class Arguments {
     required this.quantDoce,
     required this.quantMista,
     required this.quantSalgada,
+    required this.lat,
+    required this.lgn,
+    required this.feesKm,
   });
 }

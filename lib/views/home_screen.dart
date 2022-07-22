@@ -1,6 +1,5 @@
 import 'package:intl/intl.dart';
 import 'package:promosave/models/error_double_model.dart';
-
 import '../utils/export.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -14,10 +13,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final _controllerSearch = TextEditingController();
   var _controllerItems = StreamController<QuerySnapshot>.broadcast();
+  final _controllerCitiesBroadcast = StreamController<QuerySnapshot>.broadcast();
   FirebaseFirestore db = FirebaseFirestore.instance;
   List _resultsList = [];
   List _allResults = [];
   int productLength=0;
+  String newStatus = 'Tudo';
+  var valueCity ='Todos';
 
   _data() async {
 
@@ -64,8 +66,18 @@ class _HomeScreenState extends State<HomeScreen> {
     var data =await db.collection("products").where('idUser', isEqualTo: idUser).get();
     List _allResults = data.docs;
     productLength = _allResults.length;
-    
     db.collection('enterprise').doc(idUser).update({'products': productLength});
+  }
+
+  Future<Stream<QuerySnapshot>?> _addListenerCities()async{
+
+    Stream<QuerySnapshot> stream = db
+        .collection("cities")
+        .snapshots();
+
+    stream.listen((data) {
+      _controllerCitiesBroadcast.add(data);
+    });
   }
 
   @override
@@ -73,6 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     userFirebase();
     _controllerSearch.addListener(_search);
+    _addListenerCities();
   }
 
   @override
@@ -105,7 +118,59 @@ class _HomeScreenState extends State<HomeScreen> {
                       alignment: Alignment.centerLeft,
                       child: Row(
                         children: [
-                          TextCustom(text: 'Cidade - SP',fontWeight: FontWeight.normal,size: 16.0, color: PaletteColor.greyInput,textAlign: TextAlign.center,),
+                          StreamBuilder<QuerySnapshot>(
+                          stream:_controllerCitiesBroadcast.stream,
+                            builder: (context,snapshot){
+
+                              if(snapshot.hasError)
+                                return Text("Erro ao carregar dados!");
+
+                              switch (snapshot.connectionState){
+                                case ConnectionState.none:
+                                case ConnectionState.waiting:
+                                  return Container();
+                                case ConnectionState.active:
+                                case ConnectionState.done:
+
+                                  if(!snapshot.hasData){
+                                    return CircularProgressIndicator();
+                                  }else {
+                                    List<DropdownMenuItem> espItems = [];
+                                    for (int i = 0; i < snapshot.data!.docs.length; i++) {
+                                      DocumentSnapshot snap = snapshot.data!.docs[i];
+                                      espItems.add(
+                                          DropdownMenuItem(
+                                            child: Text(
+                                              snap.id,
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(color: snap.id=='Todos'?PaletteColor.primaryColor:PaletteColor.greyInput),
+                                            ),
+                                            value: "${snap.id}",
+                                          )
+                                      );
+                                    }
+                                    return Container(
+                                      width: width*0.65,
+                                      child: DropdownButton(
+                                        underline: Container(),
+                                        items: espItems,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            valueCity = value.toString();
+                                          });
+                                        },
+                                        value: valueCity,
+                                        isExpanded: true,
+                                        hint: new Text(
+                                          "",
+                                          style: TextStyle(color: PaletteColor.greyInput,fontSize: 10),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                              }
+                            },
+                          ),
                           Spacer(),
                           Icon(Icons.location_on,size: 25,color: PaletteColor.primaryColor,),
                         ],
@@ -141,15 +206,35 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               )),
-              SizedBox(height: 10),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                padding: const EdgeInsets.symmetric(vertical: 2.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    TextCustom(text: 'Tudo',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal,textAlign: TextAlign.center,),
-                    TextCustom(text: 'Aberto',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal,textAlign: TextAlign.center),
-                    TextCustom(text: 'Favoritos',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal,textAlign: TextAlign.center),
+                    TextButton(
+                      onPressed: ()=>setState(() {
+                        _allResults = [];
+                        _data();
+                        newStatus = 'Tudo';
+                      }),
+                      child: TextCustom(text: 'Tudo',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal,textAlign: TextAlign.center,)),
+                    TextButton(
+                        onPressed: ()=>setState(() {
+                          _allResults = [];
+                          _data();
+                          newStatus = 'Fechado';
+                        }),
+                      child: TextCustom(text: 'Aberto',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal,textAlign: TextAlign.center)),
+                    TextButton(
+                        onPressed: ()=>setState(() async{
+                          _allResults = [];
+                          var data =await db.collection("user").doc(FirebaseAuth.instance.currentUser!.uid).collection('favorites').get();
+                          setState(() {
+                            _allResults = data.docs;
+                          });
+                          resultSearchList();
+                        }),
+                      child: TextCustom(text: 'Favoritos',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal,textAlign: TextAlign.center)),
                   ],
                 ),
               ),
@@ -185,6 +270,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 final address = ErrorStringModel(item,'address');
                                 final lat = ErrorDoubleModel(item,'lat');
                                 final lng = ErrorDoubleModel(item,'lng');
+                                final city = ErrorStringModel(item,'city');
                                 final now= DateTime.now();
                                 int nowFormat = int.parse(DateFormat('HH').format(now));
                                 var status = '-';
@@ -192,8 +278,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 if(startHours!=""){
                                   int  startFormat = int.parse(DateFormat('HH').format(DateTime.parse("2022-06-08 "+startHours+":49.492104").toLocal()));
                                   int  finishFormat = int.parse(DateFormat('HH').format(DateTime.parse("2022-06-08 "+finishHours+":49.492104").toLocal()));
-                                  if(nowFormat>startFormat && nowFormat<finishFormat){
-                                      status = 'Aberto';
+                                  if(nowFormat>=startFormat && nowFormat<=finishFormat){
+                                    status = 'Aberto';
                                   }else{
                                     status = 'Fechado';
                                   }
@@ -220,8 +306,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                   feesKm: 0.0
                                 );
 
-                                return products>0? CardHome(
+                                return products>0 && status != newStatus && (city == valueCity || valueCity =='Todos') ? CardHome(
                                   onTap: ()=>Navigator.pushNamed(context, '/products',arguments: args),
+                                  onTapFavorite: (){
+                                    db.collection('user').doc(FirebaseAuth.instance.currentUser!.uid).collection('favorites').doc(idUser).set(
+                                      {
+                                        'idUser':idUser,
+                                        'name':name,
+                                        'products': products,
+                                        'urlPhotoProfile' : urlPhotoProfile,
+                                        'urlPhotoBanner': urlPhotoBanner,
+                                        'startHours': startHours,
+                                        'finishHours': finishHours,
+                                        'address': address,
+                                        'lat': lat,
+                                        'lng': lng,
+                                        'city': city,
+                                      });
+                                  },
                                   urlPhotoProfile: urlPhotoProfile,
                                   urlPhotoBanner: urlPhotoBanner,
                                   startHours: startHours,

@@ -93,6 +93,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
           onTap: () {
             if(quantSalgada>0 || quantMista>0 || quantDoce>0){
 
+              print(quantDoce);
+
               Arguments args = Arguments(
                 idUser: widget.args.idUser,
                 banner: widget.args.banner,

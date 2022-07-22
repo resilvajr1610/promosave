@@ -34,18 +34,30 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
   int selectedRadioButtonAddress=0;
   String _publicKey = "TEST-bcf6f11a-2a2b-4126-a324-de528297749d";
   String _idPagamento='';
+  String enterpriseName='';
+  String productName='';
 
   _data(){
+    enterpriseName = widget.args.enterpriseName;
     contSalgada = widget.args.quantSalgada;
     contMista = widget.args.quantMista;
     contDoce = widget.args.quantDoce;
-    valueDoce = double.parse(widget.args.byPriceSalgada.replaceAll('R\$ ', '').replaceAll(",", "."));
+    valueDoce = double.parse(widget.args.byPriceDoce.replaceAll('R\$ ', '').replaceAll(",", "."));
     valueMista = double.parse(widget.args.byPriceMista.replaceAll('R\$ ', '').replaceAll(",", "."));
     valueSalgada = double.parse(widget.args.byPriceSalgada.replaceAll('R\$ ', '').replaceAll(",", "."));
     totalDoce = contDoce*valueDoce;
     totalMista = contMista*valueMista;
     totalSalgada = contSalgada*valueSalgada;
     total = totalSalgada + totalMista + totalDoce + widget.args.feesKm;
+    setState(() {
+      if(valueDoce!=0){
+        productName = "Sacola Doce";
+      }else if (valueSalgada!=0){
+        productName = "Sacola Salgada";
+      }else{
+        productName = "Sacola Mista";
+      }
+    });
   }
 
   _saveShopping()async{
@@ -67,6 +79,65 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
     super.initState();
     _shoppingModel = ShoppingModel.createId();
     _data();
+    _getPagamento();
+  }
+
+  _getPagamento()async{
+    var res = await http.post(Uri.parse("https://api.mercadopago.com/checkout/preferences?access_token=TEST-2683868701623096-072020-96a1e551de175cc6875591aff881addf-10733880"),
+        body: jsonEncode(
+            {
+              "items": [
+                {
+                  "title": "Promo Save",
+                  "description": "Empresa :${enterpriseName.toUpperCase()} \nProduto : $productName",
+                  "quantity": 1,
+                  "currency_id": "ARS",
+                  "unit_price": total
+                }
+              ],
+              "payer": {
+                "email": "promosave@promosave.com"
+              }
+            }
+        )
+    );
+    //print(res.body);
+    var json = jsonDecode(res.body);
+    _idPagamento = json['id'];
+  }
+  void launchGoogleMaps(double lat, double lng) async {
+    var url = 'google.navigation:q=${lat.toString()},${lng.toString()}';
+    var fallbackUrl = 'https://www.google.com/maps/search/?api=1&query=${lat.toString()},${lng.toString()}';
+    try {
+      bool launched = await launch(url, forceSafariVC: false, forceWebView: false);
+      if (!launched) {
+        await launch(fallbackUrl, forceSafariVC: false, forceWebView: false);
+      }
+    } catch (e) {
+      await launch(fallbackUrl, forceSafariVC: false, forceWebView: false);
+    }
+  }
+
+  _salvarPagamento()async{
+
+    // Usuario usuario = Usuario();
+    //
+    // usuario.pagamento = pagamento;
+    // usuario.dataPagamento = DateTime.now().toString();
+    // FirebaseAuth auth = FirebaseAuth.instance;
+    // FirebaseUser usuarioLogado = await auth.currentUser();
+    // _idUsuarioLogado = usuarioLogado.uid;
+    // Firestore db = Firestore.instance;
+    // Map<String,dynamic> dadosAtualizar = {
+    //   "pagamento" : pagamento,
+    //   "dataVencimento" : usuario.dataVencimento,
+    //   "dataPagamento" : usuario.dataPagamento
+    // };
+    // db.collection("usuarios")
+    //     .document(_idUsuarioLogado)
+    //     .updateData(dadosAtualizar);
+
+    Navigator.pushReplacementNamed(context,'/splash');
   }
 
   @override
@@ -80,6 +151,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
         total = value==0?total + widget.args.feesKm:total - widget.args.feesKm;
         selectedRadioButton = value;
         selectedText = titleRadio[value];
+        _getPagamento();
         print(selectedText);
       });
     }
@@ -92,73 +164,12 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
       });
     }
 
-    void launchGoogleMaps(double lat, double lng) async {
-      var url = 'google.navigation:q=${lat.toString()},${lng.toString()}';
-      var fallbackUrl = 'https://www.google.com/maps/search/?api=1&query=${lat.toString()},${lng.toString()}';
-      try {
-        bool launched = await launch(url, forceSafariVC: false, forceWebView: false);
-        if (!launched) {
-          await launch(fallbackUrl, forceSafariVC: false, forceWebView: false);
-        }
-      } catch (e) {
-        await launch(fallbackUrl, forceSafariVC: false, forceWebView: false);
-      }
-    }
-
-    Future<void> _getPagamento()async{
-      var res = await http.post(Uri.parse("https://api.mercadopago.com/checkout/preferences?access_token=TEST-2683868701623096-072020-96a1e551de175cc6875591aff881addf-10733880"),
-          body: jsonEncode(
-              {
-                "items": [
-                  {
-                    "title": "Promo Save",
-                    "description": "Acesso Mensal MedQuest",
-                    "quantity": 1,
-                    "currency_id": "ARS",
-                    "unit_price": total
-                  }
-                ],
-                "payer": {
-                  "email": "medquest@medquest.com"
-                }
-              }
-          )
-      );
-      //print(res.body);
-      var json = jsonDecode(res.body);
-      _idPagamento = json['id'];
-    }
-
-    _salvarPagamento()async{
-
-      // Usuario usuario = Usuario();
-      //
-      // usuario.pagamento = pagamento;
-      // usuario.dataPagamento = DateTime.now().toString();
-      // FirebaseAuth auth = FirebaseAuth.instance;
-      // FirebaseUser usuarioLogado = await auth.currentUser();
-      // _idUsuarioLogado = usuarioLogado.uid;
-      // Firestore db = Firestore.instance;
-      // Map<String,dynamic> dadosAtualizar = {
-      //   "pagamento" : pagamento,
-      //   "dataVencimento" : usuario.dataVencimento,
-      //   "dataPagamento" : usuario.dataPagamento
-      // };
-      // db.collection("usuarios")
-      //     .document(_idUsuarioLogado)
-      //     .updateData(dadosAtualizar);
-
-      Navigator.pushReplacementNamed(context,'/splash');
-    }
-
     return Scaffold(
       bottomSheet: BottomSheetCustom(
         text: 'Pagamento',
         sizeIcon: 0.0,
         onTap: ()async{
-          _getPagamento();
-          PaymentResult result =
-              await MercadoPagoMobileCheckout.startCheckout(
+          PaymentResult result = await MercadoPagoMobileCheckout.startCheckout(
             _publicKey,
             _idPagamento,
           );

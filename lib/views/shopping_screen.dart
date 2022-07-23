@@ -32,7 +32,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
   String selectedTextAddress='Casa - Rua Antonio Almeida, 55, Centro São Paulo/SP';
   int selectedRadioButton=0;
   int selectedRadioButtonAddress=0;
-  String _publicKey = "TEST-bcf6f11a-2a2b-4126-a324-de528297749d";
+  String _publicKey = "APP_USR-19a87243-3673-4fc5-9db7-2ecea262033e";
   String _idPagamento='';
   String enterpriseName='';
   String productName='';
@@ -83,7 +83,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
   }
 
   _getPagamento()async{
-    var res = await http.post(Uri.parse("https://api.mercadopago.com/checkout/preferences?access_token=TEST-2683868701623096-072020-96a1e551de175cc6875591aff881addf-10733880"),
+    var res = await http.post(Uri.parse("https://api.mercadopago.com/checkout/preferences?access_token=APP_USR-2803868319730474-072214-a7be486b98e689aaa117599f56e1b869-188747344"),
         body: jsonEncode(
             {
               "items": [

@@ -37,11 +37,11 @@ class _WhoWeAreScreenState extends State<WhoWeAreScreen> {
               Container(
                 alignment: Alignment.center,
                 padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 10),
-                child: TextCustom(text: 'Quem somos',color: PaletteColor.primaryColor,size: 16.0,fontWeight: FontWeight.bold,textAlign: TextAlign.center,),
+                child: TextCustom(text: 'Sobre nós',color: PaletteColor.primaryColor,size: 16.0,fontWeight: FontWeight.bold,textAlign: TextAlign.center,),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: TextCustom(text: 'Nulla Lorem mollit cupidatat irure. Laborum magna nulla duis ullamco cillum dolor. Voluptate exercitation incididunt aliquip deserunt reprehenderit elit laborum. ',
+                child: TextCustom(text: 'Somos uma Startup que atua na luta contra o desperdício, fornecendo alimentos que seriam descartados por terem sido produzidos em excesso a um preço acessível.',
                   maxLines: 3,
                   color: PaletteColor.grey,size: 14.0,fontWeight: FontWeight.normal,textAlign: TextAlign.start,),
               ),
@@ -72,8 +72,12 @@ class _WhoWeAreScreenState extends State<WhoWeAreScreen> {
                     onPressed: (){},
                     icon: Icon(FontAwesomeIcons.twitterSquare,color: PaletteColor.grey,size: 40,)),
                   IconButton(
-                    onPressed: (){},
-                    icon: Icon(FontAwesomeIcons.facebookSquare,color: PaletteColor.grey,size: 40,)),
+                    onPressed: () async {
+                      String url = 'https://www.facebook.com/promosavebrasil';
+                      await launch(url);
+                    },
+                    icon: Icon(FontAwesomeIcons.facebookSquare,color: PaletteColor.grey,size: 40,),
+                  ),
                   IconButton(
                     onPressed: () async {
                       String url = 'https://www.instagram.com/promosavebrasil/';

@@ -1,5 +1,6 @@
 import 'package:google_place/google_place.dart';
 import 'package:promosave/models/shopping_model.dart';
+import '../models/alert_model.dart';
 import '../utils/export.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -82,16 +83,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-  Future _savePhoto(String name) async {
+  Future _savePhoto(String name,String type) async {
+    final image;
     try {
-      final image = await ImagePicker()
-          .pickImage(source: ImageSource.camera, imageQuality: 100);
+     if(type=='camera'){
+       image = await ImagePicker().pickImage(source: ImageSource.camera, imageQuality: 100);
+     }else{
+       image = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 100);
+     }
       if (image == null) return;
+
+      Navigator.of(context).pop();
+
 
       final imageTemporary = File(image.path);
       setState(() {
         this.picture = imageTemporary;
         setState(() {
+          urlPhotoProfile='';
           _sending = true;
         });
         _uploadImage(name);
@@ -127,8 +136,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       name: url,
     };
 
-    db
-        .collection("user")
+    db.collection("user")
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .update(dateUpdate)
         .then((value) {
@@ -186,15 +194,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               _sending == false
                   ? GestureDetector(
-                      onTap: () => _savePhoto('urlPhotoProfile'),
+                      onTap: ()=>AlertModel().alert('Perfil !', 'Escolha uma opção para \nselecionar sua foto', PaletteColor.grey, PaletteColor.grey, context,
+                          [
+                            ButtonCustom(
+                              onPressed: () => _savePhoto('urlPhotoProfile','camera'),
+                              text: 'Câmera',
+                              colorBorder: PaletteColor.greyInput,
+                              colorButton: PaletteColor.greyInput,
+                              colorText: PaletteColor.white,
+                              size: 14.0,
+                            ),
+                            ButtonCustom(
+                              onPressed: () => _savePhoto('urlPhotoProfile','gallery'),
+                              text: 'Galeria',
+                              colorBorder: PaletteColor.greyInput,
+                              colorButton: PaletteColor.greyInput,
+                              colorText: PaletteColor.white,
+                              size: 14.0,
+                            ),
+                      ]),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: photo == null
                             ? CircleAvatar(
                                 radius: 48,
-                                backgroundColor: PaletteColor.primaryColor,
-                                backgroundImage:
-                                    AssetImage('assets/image/logo.png'))
+                                backgroundColor: PaletteColor.greyInput,
+                                child: Icon(Icons.camera_alt,color: PaletteColor.white,size: 40,),
+                            )
                             : CircleAvatar(
                                 radius: 48,
                                 backgroundColor: PaletteColor.primaryColor,

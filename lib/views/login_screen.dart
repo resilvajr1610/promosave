@@ -79,14 +79,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(height: height*0.02),
                 TextCustom(
                     text: 'BEM VINDO!',
-                    size: 16.0,
+                    size: 20.0,
                     color: PaletteColor.grey,
                     fontWeight: FontWeight.bold,
                     textAlign: TextAlign.center
                 ),
                 SizedBox(height: height*0.02),
                 TextCustom(
-                    text:'“Juntos contra o desperdício”',
+                    text:'Juntos contra o desperdício',
                     size: 16.0,
                     color: PaletteColor.grey,
                     fontWeight: FontWeight.bold,

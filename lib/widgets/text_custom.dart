@@ -11,9 +11,9 @@ class TextCustom extends StatelessWidget {
 
   TextCustom({
     required this.text,
-    required this.size,
+    this.size = 16.0,
     required this.color,
-    required this.fontWeight,
+    this.fontWeight = FontWeight.normal,
     this.maxLines = 1,
     this.textAlign = TextAlign.start
   });
@@ -23,6 +23,7 @@ class TextCustom extends StatelessWidget {
     return Text(text,
         textAlign: textAlign,
         maxLines: maxLines,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(fontFamily: 'Nunito',color: color,fontSize: size,fontWeight: fontWeight)
     );
   }

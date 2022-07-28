@@ -26,7 +26,28 @@ class _ProductsScreenState extends State<ProductsScreen> {
   double distanceFees=0.0;
   double total=0.0;
 
-  _data() async {
+  String homeAddress = "";
+  String homeCity = "";
+  String homeVillage = "";
+  String homeStreet = "";
+  double homeLat = 0.0;
+  double homeLng = 0.0;
+
+  String workAddress = "";
+  String workCity = "";
+  String workVillage = "";
+  String workStreet = "";
+  double workLat = 0.0;
+  double workLng = 0.0;
+
+  String otherAddress = "";
+  String otherCity = "";
+  String otherVillage = "";
+  String otherStreet = "";
+  double otherLat = 0.0;
+  double otherLng = 0.0;
+
+  _dataProducts() async {
     var data = await db
         .collection("products")
         .where('idUser', isEqualTo: widget.args.idUser)
@@ -38,31 +59,60 @@ class _ProductsScreenState extends State<ProductsScreen> {
     return "complete";
   }
 
+  _dataUser() async {
+    DocumentSnapshot snapshot = await db
+        .collection("user")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+
+    setState(() {
+      homeAddress = data?["homeAddress"]??"";
+      homeCity = data?["homeCity"]??"";
+      homeLat = data?["homeLat"]??0.0;
+      homeLng = data?["homeLng"]??0.0;
+      homeVillage = data?["homeVillage"]??"";
+      homeStreet = data?["homeStreet"]??"";
+
+      workAddress = data?["workAddress"]??"";
+      workCity = data?["workCity"]??"";
+      workLat = data?["workLat"]??0.0;
+      workLng = data?["workLng"]??0.0;
+      workVillage = data?["workVillage"]??"";
+      workStreet = data?["workStreet"]??"";
+
+      otherAddress = data?["otherAddress"]??"";
+      otherCity = data?["otherCity"]??"";
+      otherLat = data?["otherLat"]??0.0;
+      otherLng = data?["otherLng"]??0.0;
+      otherVillage = data?["otherVillage"]??"";
+      otherStreet = data?["otherStreet"]??"";
+
+      _fees(homeLat,homeLng);
+    });
+  }
+
   _feesFirebase()async{
     DocumentSnapshot snapshot = await db
         .collection("fees").doc('fees').get();
     Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
     setState(() {
       feesKm = double.parse(data?["feesKm"].replaceAll(',', '.'));
-      _fees();
     });
   }
 
-  _fees()async{
+  _fees(double lat, double long)async{
 
-    Position? position = await Geolocator.getLastKnownPosition();
-
-    double distance = await Geolocator.distanceBetween(widget.args.lat,widget.args.lgn,position!.latitude,position!.longitude);
-
+    double distance = await Geolocator.distanceBetween(widget.args.lat,widget.args.lgn,lat,long);
+    distanceFees = distance /1000;
     setState(() {
-      distanceFees = distance /1000;
       total = distanceFees*feesKm;
     });
   }
 
-  void launchGoogleMaps(double lat, double lng) async {
-    var url = 'google.navigation:q=${lat.toString()},${lng.toString()}';
-    var fallbackUrl = 'https://www.google.com/maps/search/?api=1&query=${lat.toString()},${lng.toString()}';
+  void launchGoogleMaps() async {
+    var url = 'google.navigation:q=${widget.args.lat.toString()},${widget.args.lgn.toString()}';
+    var fallbackUrl = 'https://www.google.com/maps/search/?api=1&query=${widget.args.lat.toString()},${widget.args.lgn.toString()}';
     try {
       bool launched = await launch(url, forceSafariVC: false, forceWebView: false);
       if (!launched) {
@@ -76,7 +126,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
   @override
   void initState() {
     super.initState();
-    _data();
+    _dataProducts();
+    _dataUser();
     _feesFirebase();
   }
 
@@ -112,7 +163,25 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 byPriceMista:byPriceMista,
                 lat: widget.args.lat,
                 lgn: widget.args.lgn,
-                feesKm: total
+                feesKm: feesKm,
+                homeAddress: homeAddress,
+                homeCity: homeCity,
+                homeVillage: homeVillage,
+                homeStreet: homeStreet,
+                homeLat: homeLat,
+                homeLng: homeLng,
+                workAddress: workAddress,
+                workCity: workCity,
+                workVillage: workVillage,
+                workStreet: workStreet,
+                workLat: workLat,
+                workLng: workLng,
+                otherAddress: otherAddress,
+                otherCity: otherCity,
+                otherVillage: otherVillage,
+                otherStreet: otherStreet,
+                otherLat: otherLat,
+                otherLng: otherLng,
               );
 
               Navigator.pushNamed(context, '/shopping',arguments: args);
@@ -186,7 +255,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     widget.args.status != "-"
                         ? Container(
                             padding: EdgeInsets.symmetric(horizontal: 20),
-                            width: width * 0.6,
+                            width: width * 0.65,
                             child: TextCustom(
                                 text: widget.args.status +
                                     " - " +
@@ -201,7 +270,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         : Container(),
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 20),
-                      width: width * 0.6,
+                      width: width * 0.65,
                       child: TextCustom(
                           text: 'Endereço : ' + widget.args.address,
                           fontWeight: FontWeight.normal,
@@ -211,7 +280,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     ),
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 20),
-                      width: width * 0.6,
+                      width: width * 0.65,
                       child: TextCustom(
                           text: 'Taxa de entrega : R\$ ${total.toStringAsFixed(2).replaceAll('.', ',')}',
                           fontWeight: FontWeight.normal,
@@ -222,7 +291,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   ],
                 ),
                 GestureDetector(
-                  onTap: ()=>launchGoogleMaps(widget.args.lat, widget.args.lgn),
+                  onTap: ()=>launchGoogleMaps(),
                   child: Padding(
                     padding: const EdgeInsets.only(right: 12.0),
                     child: Column(

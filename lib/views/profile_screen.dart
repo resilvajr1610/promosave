@@ -17,26 +17,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _sending = false;
   String phone = "";
 
-  String Casaaddress = "";
-  String Casacity = "";
-  String Casavillage = "";
-  String Casastreet = "";
-  double Casalat = 0.0;
-  double Casalng = 0.0;
+  String homeAddress = "";
+  String homeCity = "";
+  String homeVillage = "";
+  String homeStreet = "";
+  double homeLat = 0.0;
+  double homeLng = 0.0;
 
-  String Trabalhoaddress = "";
-  String Trabalhocity = "";
-  String Trabalhovillage = "";
-  String Trabalhostreet = "";
-  double Trabalholat = 0.0;
-  double Trabalholng = 0.0;
+  String workAddress = "";
+  String workCity = "";
+  String workVillage = "";
+  String workStreet = "";
+  double workLat = 0.0;
+  double workLng = 0.0;
 
-  String Outroaddress = "";
-  String Outrocity = "";
-  String Outrovillage = "";
-  String Outrostreet = "";
-  double Outrolat = 0.0;
-  double Outrolng = 0.0;
+  String otherAddress = "";
+  String otherCity = "";
+  String otherVillage = "";
+  String otherStreet = "";
+  double otherLat = 0.0;
+  double otherLng = 0.0;
 
   _showDialog() {
     double width = MediaQuery.of(context).size.width;
@@ -57,26 +57,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     setState(() {
       phone = data?["phone"]??"";
-      Casaaddress = data?["Casaaddress"]??"";
-      Casacity = data?["Casacity"]??"";
-      Casalat = data?["Casalat"]??0.0;
-      Casalng = data?["Casalng"]??0.0;
-      Casavillage = data?["Casavillage"]??"";
-      Casastreet = data?["Casastreet"]??"";
+      homeAddress = data?["homeAddress"]??"";
+      homeCity = data?["homeCity"]??"";
+      homeLat = data?["homeLat"]??0.0;
+      homeLng = data?["homeLng"]??0.0;
+      homeVillage = data?["homeVillage"]??"";
+      homeStreet = data?["homeStreet"]??"";
 
-      Trabalhoaddress = data?["Trabalhoaddress"]??"";
-      Trabalhocity = data?["Trabalhocity"]??"";
-      Trabalholat = data?["Trabalholat"]??0.0;
-      Trabalholng = data?["Trabalholng"]??0.0;
-      Trabalhovillage = data?["Trabalhovillage"]??"";
-      Trabalhostreet = data?["Trabalhostreet"]??"";
+      workAddress = data?["workAddress"]??"";
+      workCity = data?["workCity"]??"";
+      workLat = data?["workLat"]??0.0;
+      workLng = data?["workLng"]??0.0;
+      workVillage = data?["workVillage"]??"";
+      workStreet = data?["workStreet"]??"";
 
-      Outroaddress = data?["Outroaddress"]??"";
-      Outrocity = data?["Outrocity"]??"";
-      Outrolat = data?["Outrolat"]??0.0;
-      Outrolng = data?["Outrolng"]??0.0;
-      Outrovillage = data?["Outrovillage"]??"";
-      Outrostreet = data?["Outrostreet"]??"";
+      otherAddress = data?["otherAddress"]??"";
+      otherCity = data?["otherCity"]??"";
+      otherLat = data?["otherLat"]??0.0;
+      otherLng = data?["otherLng"]??0.0;
+      otherVillage = data?["otherVillage"]??"";
+      otherStreet = data?["otherStreet"]??"";
 
       _controllerPhone = TextEditingController(text: phone);
     });
@@ -328,7 +328,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: PaletteColor.primaryColor,
                       fontWeight: FontWeight.normal,
                       textAlign: TextAlign.center)),
-              Casaaddress != ""
+              homeAddress != ""
                   ? Container(
                       width: width,
                       alignment: Alignment.centerLeft,
@@ -337,13 +337,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         children: [
                           TextCustomAddress(
                             address:
-                            Casaaddress,
+                            homeAddress,
                             type: 'Casa',
                             width: width * 0.7,
                           ),
                           Spacer(),
                           GestureDetector(
-                            onTap: ()=>deleteAddress('Casa'),
+                            onTap: ()=>deleteAddress('home'),
                             child: Icon(
                               Icons.delete,
                               color: PaletteColor.primaryColor,
@@ -353,7 +353,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ))
                   : Container(),
               SizedBox(height: 10),
-              Trabalhoaddress != ""
+              workAddress != ""
                   ? Container(
                       width: width,
                       alignment: Alignment.centerLeft,
@@ -362,13 +362,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         children: [
                           TextCustomAddress(
                             address:
-                            Trabalhoaddress,
+                            workAddress,
                             type: 'Trabalho',
                             width: width * 0.7,
                           ),
                           Spacer(),
                           GestureDetector(
-                            onTap: ()=>deleteAddress('Trabalho'),
+                            onTap: ()=>deleteAddress('work'),
                             child: Icon(
                               Icons.delete,
                               color: PaletteColor.primaryColor,
@@ -378,7 +378,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ))
                   : Container(),
               SizedBox(height: 10),
-              Outroaddress != ""
+              otherAddress != ""
                   ? Container(
                   width: width,
                   alignment: Alignment.centerLeft,
@@ -387,13 +387,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       TextCustomAddress(
                         address:
-                        Outroaddress,
+                        otherAddress,
                         type: 'Outro',
                         width: width * 0.7,
                       ),
                       Spacer(),
                       GestureDetector(
-                        onTap: ()=>deleteAddress('Outro'),
+                        onTap: ()=>deleteAddress('other'),
                         child: Icon(
                           Icons.delete,
                           color: PaletteColor.primaryColor,
@@ -403,7 +403,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ))
                   : Container(),
               SizedBox(height: 10),
-              Casaaddress == "" || Trabalhoaddress == "" || Outrostreet == ""
+              homeAddress == "" || workAddress == "" || otherStreet == ""
                   ? Row(
                       children: [
                         GestureDetector(
@@ -473,7 +473,7 @@ class _MyDialogState extends State<MyDialog> {
   double lng = 0.0;
   List titleRadio=['Casa','Trabalho','Outro'];
   int selectedRadioButton=0;
-  String selectedText='Casa';
+  String selectedText='home';
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -502,12 +502,12 @@ class _MyDialogState extends State<MyDialog> {
   _saveData(){
     db.collection("user").doc(FirebaseAuth.instance.currentUser!.uid).update({
 
-      "${selectedText}address":_controllerAddress.text,
-      "${selectedText}street" :street,
-      "${selectedText}village":village,
-      "${selectedText}city"   :city,
-      "${selectedText}lat"    :lat,
-      "${selectedText}lng"    :lng,
+      "${selectedText}Address":_controllerAddress.text,
+      "${selectedText}Street" :street,
+      "${selectedText}Village":village,
+      "${selectedText}City"   :city,
+      "${selectedText}Lat"    :lat,
+      "${selectedText}Lng"    :lng,
 
     }).then((_)
     => Navigator.pushReplacementNamed(context, '/profile'));
@@ -536,7 +536,13 @@ class _MyDialogState extends State<MyDialog> {
     setSelectedRadio(int value){
       setState(() {
         selectedRadioButton = value;
-        selectedText = titleRadio[value];
+        if(value == 0){
+          selectedText = 'home';
+        }else if (value == 1){
+          selectedText = 'work';
+        }else{
+          selectedText = 'other';
+        }
         print(selectedText);
       });
     }

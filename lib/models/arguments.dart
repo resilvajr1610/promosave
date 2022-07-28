@@ -17,6 +17,27 @@ class Arguments {
   final double lgn;
   final double feesKm;
 
+  final String homeAddress;
+  final String homeCity;
+  final String homeVillage;
+  final String homeStreet;
+  final double homeLat;
+  final double homeLng;
+
+  final String workAddress;
+  final String workCity;
+  final String workVillage;
+  final String workStreet;
+  final double workLat;
+  final double workLng;
+
+  final String otherAddress;
+  final String otherCity;
+  final String otherVillage;
+  final String otherStreet;
+  final double otherLat;
+  final double otherLng;
+
   Arguments({
     required this.idUser,
     required this.banner,
@@ -35,5 +56,23 @@ class Arguments {
     required this.lat,
     required this.lgn,
     required this.feesKm,
+    this.homeAddress = '',
+    this.homeCity = '',
+    this.homeVillage = '',
+    this.homeStreet = '',
+    this.homeLat = 0.0,
+    this.homeLng = 0.0,
+    this.workAddress = '',
+    this.workCity = '',
+    this.workVillage = '',
+    this.workStreet = '',
+    this.workLat = 0.0,
+    this.workLng = 0.0,
+    this.otherAddress = '',
+    this.otherCity = '',
+    this.otherVillage = '',
+    this.otherStreet = '',
+    this.otherLat = 0.0,
+    this.otherLng = 0.0,
   });
 }

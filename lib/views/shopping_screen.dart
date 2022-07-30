@@ -39,6 +39,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
   String enterpriseName='';
   String productName='';
   bool isLoading=false;
+  int order=0;
 
   _dataProduts()async{
     enterpriseName = widget.args.enterpriseName;
@@ -96,16 +97,95 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
 
   _saveShopping()async{
 
-    _shoppingModel.idUser=FirebaseAuth.instance.currentUser!.uid;
+    double latClient =0.0;
+    double lngClient =0.0;
+
+    if(selectedRadioButtonAddress == 0){
+
+      setState(() {
+        latClient = widget.args.homeLat;
+        lngClient = widget.args.homeLng;
+      });
+
+    }else if(selectedRadioButtonAddress ==1){
+
+      setState(() {
+        latClient = widget.args.workLat;
+        lngClient = widget.args.workLng;
+      });
+
+    }else{
+
+      setState(() {
+        latClient = widget.args.otherLat;
+        lngClient = widget.args.otherLng;
+      });
+    }
+
+    _shoppingModel.order = order+1;
+    _shoppingModel.hourRequest = DateTime.now().toString();
+    _shoppingModel.idClient=FirebaseAuth.instance.currentUser!.uid;
+    _shoppingModel.idEnterprise=widget.args.idEnterprise;
+    _shoppingModel.logoUrl=widget.args.enterprisePicture;
+    _shoppingModel.idDelivery='';
+    _shoppingModel.nameDelivery='';
+    _shoppingModel.nameClient= FirebaseAuth.instance.currentUser!.displayName!;
+    _shoppingModel.nameEnterprise= widget.args.enterpriseName;
     _shoppingModel.quantSalgada= widget.args.quantSalgada;
     _shoppingModel.quantMista= widget.args.quantMista;
     _shoppingModel.quantDoce= widget.args.quantDoce;
-    _shoppingModel.priceSalgada=widget.args.byPriceSalgada;
-    _shoppingModel.priceMista=widget.args.byPriceMista;
-    _shoppingModel.priceDoce=widget.args.byPriceDoce;
-    _shoppingModel.status = TextConst.SHOPPING;
+    _shoppingModel.priceSalgada= totalSalgada;
+    _shoppingModel.priceMista=totalMista;
+    _shoppingModel.priceDoce=totalDoce;
+    _shoppingModel.totalFees=totalFees;
+    _shoppingModel.addressClient= selectedText=='Retirada no local'?'Retirada no local':selectedTextAddress;
+    _shoppingModel.addressEnterprise = widget.args.address;
+    _shoppingModel.latClient = selectedText=='Retirada no local'?0.0:latClient;
+    _shoppingModel.lngClient = selectedText=='Retirada no local'?0.0:lngClient;
+    _shoppingModel.latEnterprise = widget.args.lat;
+    _shoppingModel.lngEnterprise = widget.args.lgn;
+    _shoppingModel.status = TextConst.ORDERCREATED;
+    _shoppingModel.type = selectedText;
+    _shoppingModel.quantBagDoce = widget.args.quantBagDoce;
+    _shoppingModel.quantBagMista = widget.args.quantBagMista;
+    _shoppingModel.quantBagSalgada = widget.args.quantBagSalgada;
 
-    await db.collection('shopping').doc(_shoppingModel.idShopping).set(_shoppingModel.toMap());
+    int quant = 0;
+    if(widget.args.quantSalgada!=0){
+      setState(() {
+        quant = widget.args.available - widget.args.quantSalgada;
+      });
+    }else if(widget.args.quantMista!=0){
+      setState(() {
+        quant = widget.args.available - widget.args.quantMista;
+      });
+    }else if(widget.args.quantDoce!=0){
+      setState(() {
+        quant = widget.args.available - widget.args.quantDoce;
+      });
+    }else{
+      setState(() {
+        quant = widget.args.available;
+      });
+    }
+
+
+    await db.collection('shopping').doc(_shoppingModel.idShopping).set(_shoppingModel.toMap()).then((value)async{
+      await db.collection('order').doc('order').set({'order':_shoppingModel.order}).then((value){
+            db.collection('products').doc(widget.args.idProduct).update({'available' : quant})
+                .then((value) => Navigator.pushReplacementNamed(context, '/splash'));
+      });
+    });
+  }
+
+  _getOrder()async{
+    DocumentSnapshot snapshot = await db.collection('order').doc('order').get();
+    Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+    setState(() {
+      order = data?["order"]??0;
+      print(order);
+    });
+    _saveShopping();
   }
 
   @override
@@ -223,6 +303,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
         total = value==0?total + totalFees:total - totalFees;
         selectedRadioButton = value;
         selectedText = titleRadio[value];
+        print(selectedText);
       });
       _getPagamento();
       isLoading=true;
@@ -232,6 +313,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
       setState(() {
         selectedRadioButtonAddress = value;
         selectedTextAddress = titleRadioAddress[value];
+        print(selectedTextAddress);
         calculateDelivery(value);
       });
     }
@@ -250,13 +332,15 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
         text: 'Pagamento',
         sizeIcon: 0.0,
         onTap: ()async{
-          PaymentResult result = await MercadoPagoMobileCheckout.startCheckout(
-            _publicKey,
-            _idPagamento,
-          );
-          if(result.status == "approved"){
-            _salvarPagamento();
-          }
+          _getOrder();
+          ///temporariamente comentado para testes sem mercado pago, mas função está funcionando perfeitamente
+          // PaymentResult result = await MercadoPagoMobileCheckout.startCheckout(
+          //   _publicKey,
+          //   _idPagamento,
+          // );
+          // if(result.status == "approved"){
+          //   _getOrder();
+          // }
         },
       ),
       body: SingleChildScrollView(
@@ -341,6 +425,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                       padding: EdgeInsets.symmetric(horizontal: 20),
                       width: width * 0.65,
                       child: TextCustom(
+                          maxLines: 3,
                           text: 'Endereço : ' + widget.args.address,
                           fontWeight: FontWeight.normal,
                           color: PaletteColor.grey,

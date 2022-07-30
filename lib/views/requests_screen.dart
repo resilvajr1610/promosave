@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 import 'package:promosave/widgets/container_requests_client.dart';
 
+import '../models/requests_model.dart';
 import '../utils/export.dart';
 
 class RequestsScreen extends StatefulWidget {
@@ -11,12 +14,23 @@ class RequestsScreen extends StatefulWidget {
 
 class _RequestsScreenState extends State<RequestsScreen> {
 
-  bool showDetailsRequests1=false;
-  bool showDetailsRequests2=false;
-  bool showDetailsRequests3=false;
-  bool showDetailsRequests4=false;
-  bool showDetailsRequests5=false;
-  bool showDetailsRequests6=false;
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  List<RequestsModel> listRequests=[];
+  List _allResults = [];
+
+  data()async{
+    var data = await db.collection("shopping").where('idClient', isEqualTo: FirebaseAuth.instance.currentUser!.uid).get();
+
+    setState(() {
+      _allResults = data.docs;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    data();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,135 +64,41 @@ class _RequestsScreenState extends State<RequestsScreen> {
             ),
             Container(
               height: height*0.63,
-              child: ListView(
-                children: [
-                  ContainerRequestsClient(
-                    idRequests: 0001,
-                    date: '03/06/2022',
-                    time: '18:00',
-                    enterprise: 'Carlos Silva',
-                    contMixed: 3,
-                    contSalt: 0,
-                    contSweet: 3,
-                    type: 'Para entrega',
-                    showDetailsRequests: showDetailsRequests1,
-                    status: 'Pendente',
-                    onTapIcon: (){
-                      setState(() {
-                        if(showDetailsRequests1==false){
-                          showDetailsRequests1=true;
-                        }else{
-                          showDetailsRequests1=false;
-                        }
-                      });
-                    },
-                  ),
-                  ContainerRequestsClient(
-                    showDetailsRequests: showDetailsRequests2,
-                    idRequests: 0002,
-                    date: '03/06/2022',
-                    time: '21:00',
-                    enterprise: 'Maria Almeida',
-                    contMixed: 1,
-                    contSalt: 3,
-                    contSweet: 0,
-                    type: 'Retirada do cliente',
-                    status: 'Entregue',
-                    onTapIcon: (){
-                      setState(() {
-                        if(showDetailsRequests2==false){
-                          showDetailsRequests2=true;
-                        }else{
-                          showDetailsRequests2=false;
-                        }
-                      });
-                    },
-                  ),
-                  ContainerRequestsClient(
-                    idRequests: 0003,
-                    date: '03/06/2022',
-                    time: '18:00',
-                    enterprise: 'Carlos Silva',
-                    contMixed: 2,
-                    contSalt: 0,
-                    contSweet: 3,
-                    type: 'Para entrega',
-                    status: 'Entregue',
-                    showDetailsRequests: showDetailsRequests3,
-                    onTapIcon: (){
-                      setState(() {
-                        if(showDetailsRequests3==false){
-                          showDetailsRequests3=true;
-                        }else{
-                          showDetailsRequests3=false;
-                        }
-                      });
-                    },
-                  ),
-                  ContainerRequestsClient(
-                    showDetailsRequests: showDetailsRequests4,
-                    idRequests: 0004,
-                    date: '03/06/2022',
-                    time: '21:00',
-                    enterprise: 'Maria Almeida',
-                    contMixed: 1,
-                    contSalt: 1,
-                    contSweet: 1,
-                    type: 'Retirada do cliente',
-                    status: 'Entregue',
-                    onTapIcon: (){
-                      setState(() {
-                        if(showDetailsRequests4==false){
-                          showDetailsRequests4=true;
-                        }else{
-                          showDetailsRequests4=false;
-                        }
-                      });
-                    },
-                  ),
-                  ContainerRequestsClient(
-                    idRequests: 0005,
-                    date: '03/06/2022',
-                    time: '18:00',
-                    enterprise: 'Carlos Silva',
-                    contMixed: 2,
-                    contSalt: 0,
-                    contSweet: 1,
-                    type: 'Para entrega',
-                    status: 'Entregue',
-                    showDetailsRequests: showDetailsRequests5,
-                    onTapIcon: (){
-                      setState(() {
-                        if(showDetailsRequests5==false){
-                          showDetailsRequests5=true;
-                        }else{
-                          showDetailsRequests5=false;
-                        }
-                      });
-                    },
-                  ),
-                  ContainerRequestsClient(
-                    showDetailsRequests: showDetailsRequests6,
-                    idRequests: 0006,
-                    date: '03/06/2022',
-                    time: '21:00',
-                    enterprise: 'Maria Almeida',
-                    contMixed: 1,
-                    contSalt: 1,
-                    contSweet: 2,
-                    type: 'Retirada do cliente',
-                    status: 'Entregue',
-                    onTapIcon: (){
-                      setState(() {
-                        if(showDetailsRequests6==false){
-                          showDetailsRequests6=true;
-                        }else{
-                          showDetailsRequests6=false;
-                        }
-                      });
-                    },
-                  ),
-                ],
+              child: ListView.builder(
+                itemCount: _allResults.length,
+                  itemBuilder:(context,index){
+
+                    DocumentSnapshot item = _allResults[index];
+
+                    if(_allResults.length == 0){
+                      return Center(
+                          child: Text('Nenhuma pergunta encontrada dessa categoria',
+                            style: TextStyle(fontSize: 16,color: PaletteColor.primaryColor),)
+                      );
+                    }else{
+                      listRequests.add(
+                          RequestsModel(
+                              showRequests: false
+                          )
+                      );
+                      return ContainerRequestsClient(
+                        idRequests: item['order'],
+                        date: DateFormat("dd/MM/yyyy HH:mm").format(DateTime.parse(item['hourRequest'])),
+                        enterprise: item['nameEnterprise'].toString().toUpperCase(),
+                        contMixed: item['quantMista'],
+                        contSalt: item['quantSalgada'],
+                        contSweet: item['quantDoce'],
+                        type: item['type'],
+                        showDetailsRequests: listRequests[index].showRequests,
+                        status: item['status']==TextConst.ORDERCREATED?'Pendente':item['status'],
+                        onTapIcon: (){
+                          setState(() {
+                            listRequests[index].showRequests?listRequests[index].showRequests=false:listRequests[index].showRequests=true;
+                          });
+                        },
+                      );
+                    }
+                  }
               ),
             ),
           ],

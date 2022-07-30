@@ -10,7 +10,6 @@ class ContainerRequestsClient extends StatelessWidget {
   final contSalt;
   final contSweet;
   final date;
-  final time;
   final enterprise;
   final type;
   final status;
@@ -20,7 +19,6 @@ class ContainerRequestsClient extends StatelessWidget {
     required this.showDetailsRequests,
     required this.idRequests,
     required this.date,
-    required this.time,
     required this.enterprise,
     required this.contMixed,
     required this.contSalt,
@@ -55,7 +53,7 @@ class ContainerRequestsClient extends StatelessWidget {
                   Container(
                     width: width*0.35,
                     child: TextCustom(
-                        text: '$date $time',color: PaletteColor.grey,size: 12.0,fontWeight: FontWeight.normal,textAlign: TextAlign.start
+                        text: '$date',color: PaletteColor.grey,size: 12.0,fontWeight: FontWeight.normal,textAlign: TextAlign.start
                     ),
                   ),
                   GestureDetector(

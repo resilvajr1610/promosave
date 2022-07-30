@@ -260,7 +260,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               itemBuilder: (BuildContext context, index) {
                                 DocumentSnapshot item = _resultsList[index];
 
-                                String idUser = ErrorStringModel(item,'idUser');
+                                String idEnterprise = ErrorStringModel(item,'idUser');
                                 String name = ErrorStringModel(item,'name');
                                 int products = ErrorListNumber(item,'products');
                                 final urlPhotoProfile = ErrorStringModel(item,'urlPhotoProfile');
@@ -284,10 +284,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                     status = 'Fechado';
                                   }
                                 }
-                                produts(idUser);
+                                produts(idEnterprise);
 
                                 Arguments args = Arguments(
-                                  idUser:idUser,
+                                  idProduct: '',
+                                  available: 0,
+                                  idEnterprise:idEnterprise,
                                   banner: urlPhotoBanner,
                                   enterpriseName: name,
                                   enterprisePicture: urlPhotoProfile,
@@ -298,6 +300,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   quantMista: 0,
                                   quantDoce: 0,
                                   quantSalgada: 0,
+                                  quantBagDoce: 0,
+                                  quantBagMista: 0,
+                                  quantBagSalgada: 0,
                                   byPriceSalgada: '',
                                   byPriceDoce: '',
                                   byPriceMista:'',
@@ -309,9 +314,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 return products>0 && status != newStatus && (city == valueCity || valueCity =='Todos') ? CardHome(
                                   onTap: ()=>Navigator.pushNamed(context, '/products',arguments: args),
                                   onTapFavorite: (){
-                                    db.collection('user').doc(FirebaseAuth.instance.currentUser!.uid).collection('favorites').doc(idUser).set(
+                                    db.collection('user').doc(FirebaseAuth.instance.currentUser!.uid).collection('favorites').doc(idEnterprise).set(
                                       {
-                                        'idUser':idUser,
+                                        'idUser':idEnterprise,
                                         'name':name,
                                         'products': products,
                                         'urlPhotoProfile' : urlPhotoProfile,

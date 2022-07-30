@@ -1,5 +1,6 @@
 class Arguments {
-  final String idUser;
+  final String idEnterprise;
+  final String idProduct;
   final String banner;
   final String enterpriseName;
   final String enterprisePicture;
@@ -11,8 +12,12 @@ class Arguments {
   final String byPriceMista;
   final String byPriceSalgada;
   final int quantDoce;
+  final int available;
   final int quantMista;
   final int quantSalgada;
+  final int quantBagDoce;
+  final int quantBagMista;
+  final int quantBagSalgada;
   final double lat;
   final double lgn;
   final double feesKm;
@@ -39,7 +44,9 @@ class Arguments {
   final double otherLng;
 
   Arguments({
-    required this.idUser,
+    required this.idEnterprise,
+    required this.idProduct,
+    required this.available,
     required this.banner,
     required this.enterpriseName,
     required this.enterprisePicture,
@@ -53,6 +60,9 @@ class Arguments {
     required this.quantDoce,
     required this.quantMista,
     required this.quantSalgada,
+    required this.quantBagDoce,
+    required this.quantBagMista,
+    required this.quantBagSalgada,
     required this.lat,
     required this.lgn,
     required this.feesKm,

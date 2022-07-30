@@ -25,6 +25,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
   double feesKm=0.0;
   double distanceFees=0.0;
   double total=0.0;
+  int quantBagDoce =0;
+  int quantBagMista =0;
+  int quantBagSalgada =0;
+  String idProduct = '';
+  int available = 0;
 
   String homeAddress = "";
   String homeCity = "";
@@ -50,7 +55,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   _dataProducts() async {
     var data = await db
         .collection("products")
-        .where('idUser', isEqualTo: widget.args.idUser)
+        .where('idUser', isEqualTo: widget.args.idEnterprise)
         .get();
 
     setState(() {
@@ -147,7 +152,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
               print(quantDoce);
 
               Arguments args = Arguments(
-                idUser: widget.args.idUser,
+                idProduct: idProduct,
+                available: available,
+                idEnterprise: widget.args.idEnterprise,
                 banner: widget.args.banner,
                 enterpriseName:  widget.args.enterpriseName,
                 enterprisePicture:  widget.args.enterprisePicture,
@@ -182,6 +189,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 otherStreet: otherStreet,
                 otherLat: otherLat,
                 otherLng: otherLng,
+                quantBagDoce: quantBagDoce,
+                quantBagMista: quantBagMista,
+                quantBagSalgada: quantBagSalgada
               );
 
               Navigator.pushNamed(context, '/shopping',arguments: args);
@@ -343,8 +353,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
                               DocumentSnapshot item = _allResults[index];
 
                               String idUser = ErrorListText(item, 'idUser');
-                              String idProduct = ErrorListText(item, 'idProduct');
-                              final available = ErrorListNumber(item, 'available');
+                              idProduct = ErrorListText(item, 'idProduct');
+                              available = ErrorListNumber(item, 'available');
                               final byPrice = ErrorListText(item, 'byPrice');
                               final inPrice = ErrorListText(item, 'inPrice');
                               final description = ErrorListText(item, 'description');
@@ -355,23 +365,30 @@ class _ProductsScreenState extends State<ProductsScreen> {
                               return CardProducts(
                                 onTapMore: (){
                                   setState(() {
-                                    if(product=="Salgada"){
-                                      if(available>quantSalgada){
-                                        quantSalgada=quantSalgada+1;
-                                        byPriceSalgada = byPrice;
+                                    if(widget.args.status !='Fechado'){
+                                      if(product=="Salgada"){
+                                        if(available>quantSalgada){
+                                          quantSalgada=quantSalgada+1;
+                                          byPriceSalgada = byPrice;
+                                          quantBagSalgada = quantBag*quantSalgada;
+                                        }
                                       }
-                                    }
-                                    if(product=="Mista"){
-                                      if(available>quantMista){
-                                        quantMista=quantMista+1;
-                                        byPriceMista = byPrice;
+                                      if(product=="Mista"){
+                                        if(available>quantMista){
+                                          quantMista=quantMista+1;
+                                          byPriceMista = byPrice;
+                                          quantBagMista = quantBag*quantMista;
+                                        }
                                       }
-                                    }
-                                    if(product=="Doce"){
-                                      if(available>quantDoce){
-                                        quantDoce=quantDoce+1;
-                                        byPriceDoce = byPrice;
+                                      if(product=="Doce"){
+                                        if(available>quantDoce){
+                                          quantDoce=quantDoce+1;
+                                          byPriceDoce = byPrice;
+                                          quantBagDoce = quantBag*quantDoce;
+                                        }
                                       }
+                                    }else{
+                                      showSnackBar(context, 'Aproveite para verificar o cardápio.\nEste estabelecimento estará fechado até as\n${widget.args.startHours} horas ', _scaffoldKey);
                                     }
                                   });
                                 },
@@ -380,19 +397,19 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                     if(product=="Salgada"){
                                       if(0<quantSalgada){
                                         quantSalgada=quantSalgada-1;
-                                        byPriceSalgada = byPrice;
+                                        byPriceSalgada = byPrice*quantSalgada;
                                       }
                                     }
                                     if(product=="Mista"){
                                       if(0<quantMista){
                                         quantMista=quantMista-1;
-                                        byPriceMista = byPrice;
+                                        quantBagMista = quantBag*quantMista;
                                       }
                                     }
                                     if(product=="Doce"){
                                       if(0<quantDoce){
                                         quantDoce=quantDoce-1;
-                                        byPriceDoce = byPrice;
+                                        quantBagDoce = quantBag*quantDoce;
                                       }
                                     }
                                   });

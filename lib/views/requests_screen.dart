@@ -72,7 +72,7 @@ class _RequestsScreenState extends State<RequestsScreen> {
 
                     if(_allResults.length == 0){
                       return Center(
-                          child: Text('Nenhuma pergunta encontrada dessa categoria',
+                          child: Text('Nenhum pedido encontrado',
                             style: TextStyle(fontSize: 16,color: PaletteColor.primaryColor),)
                       );
                     }else{

@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:promosave/models/error_double_model.dart';
+import 'package:promosave/models/favorites_model.dart';
 import '../utils/export.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -15,22 +16,25 @@ class _HomeScreenState extends State<HomeScreen> {
   var _controllerItems = StreamController<QuerySnapshot>.broadcast();
   final _controllerCitiesBroadcast = StreamController<QuerySnapshot>.broadcast();
   FirebaseFirestore db = FirebaseFirestore.instance;
+  List<FavoritesModel> listFavorites=[];
   List _resultsList = [];
   List _allResults = [];
+  List _allFavorites = [];
   int productLength=0;
   String newStatus = 'Tudo';
   var valueCity ='Todos';
+  bool showFavorite=false;
 
   _data() async {
 
     var data = await db.collection("enterprise").where('type', isEqualTo: TextConst.ENTERPRISE).get();
-
     setState(() {
       _allResults = data.docs;
     });
     resultSearchList();
     return "complete";
   }
+
   _search() {
     resultSearchList();
   }
@@ -78,6 +82,15 @@ class _HomeScreenState extends State<HomeScreen> {
     stream.listen((data) {
       _controllerCitiesBroadcast.add(data);
     });
+  }
+
+  _checkFavorites(String idEnterprise,int index)async{
+    DocumentSnapshot snapshot = await db.collection('user').doc(FirebaseAuth.instance.currentUser!.uid).collection('favorites')
+        .doc(idEnterprise).get();
+
+    Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+    listFavorites[index].showFavorites = data?["idEnterprise"]==idEnterprise?true:false;
+    print(listFavorites[index].showFavorites);
   }
 
   @override
@@ -212,29 +225,37 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     TextButton(
-                      onPressed: ()=>setState(() {
-                        _allResults = [];
-                        _data();
-                        newStatus = 'Tudo';
-                      }),
-                      child: TextCustom(text: 'Tudo',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal,textAlign: TextAlign.center,)),
+                        onPressed: ()=>setState(() {
+                          _allResults = [];
+                          _data();
+                          newStatus = 'Tudo';
+                        }),
+                        child: TextCustom(text: 'Tudo',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal,textAlign: TextAlign.center,)),
                     TextButton(
                         onPressed: ()=>setState(() {
                           _allResults = [];
                           _data();
                           newStatus = 'Fechado';
                         }),
-                      child: TextCustom(text: 'Aberto',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal,textAlign: TextAlign.center)),
+                        child: TextCustom(text: 'Aberto',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal,textAlign: TextAlign.center)),
                     TextButton(
                         onPressed: ()=>setState(() async{
+                          listFavorites=[];
                           _allResults = [];
+
+                          listFavorites.add(
+                              FavoritesModel(
+                                  showFavorites: true
+                              )
+                          );
+
                           var data =await db.collection("user").doc(FirebaseAuth.instance.currentUser!.uid).collection('favorites').get();
                           setState(() {
                             _allResults = data.docs;
                           });
                           resultSearchList();
                         }),
-                      child: TextCustom(text: 'Favoritos',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal,textAlign: TextAlign.center)),
+                        child: TextCustom(text: 'Favoritos',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal,textAlign: TextAlign.center)),
                   ],
                 ),
               ),
@@ -284,6 +305,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     status = 'Fechado';
                                   }
                                 }
+
                                 produts(idEnterprise);
 
                                 Arguments args = Arguments(
@@ -311,24 +333,34 @@ class _HomeScreenState extends State<HomeScreen> {
                                   feesKm: 0.0
                                 );
 
-                                return products>0 && status != newStatus && (city == valueCity || valueCity =='Todos') ? CardHome(
+                                listFavorites.add(
+                                    FavoritesModel(
+                                        showFavorites: false
+                                    )
+                                );
+
+                                _checkFavorites(idEnterprise,index);
+                                
+                                return products>0 && status != newStatus && (city == valueCity || valueCity =='Todos')
+                                    ? CardHome(
                                   onTap: ()=>Navigator.pushNamed(context, '/products',arguments: args),
                                   onTapFavorite: (){
                                     db.collection('user').doc(FirebaseAuth.instance.currentUser!.uid).collection('favorites').doc(idEnterprise).set(
-                                      {
-                                        'idUser':idEnterprise,
-                                        'name':name,
-                                        'products': products,
-                                        'urlPhotoProfile' : urlPhotoProfile,
-                                        'urlPhotoBanner': urlPhotoBanner,
-                                        'startHours': startHours,
-                                        'finishHours': finishHours,
-                                        'address': address,
-                                        'lat': lat,
-                                        'lng': lng,
-                                        'city': city,
-                                      });
+                                        {
+                                          'idUser':idEnterprise,
+                                          'name':name,
+                                          'products': products,
+                                          'urlPhotoProfile' : urlPhotoProfile,
+                                          'urlPhotoBanner': urlPhotoBanner,
+                                          'startHours': startHours,
+                                          'finishHours': finishHours,
+                                          'address': address,
+                                          'lat': lat,
+                                          'lng': lng,
+                                          'city': city,
+                                        });
                                   },
+                                  favorite: listFavorites[index].showFavorites,
                                   urlPhotoProfile: urlPhotoProfile,
                                   urlPhotoBanner: urlPhotoBanner,
                                   startHours: startHours,

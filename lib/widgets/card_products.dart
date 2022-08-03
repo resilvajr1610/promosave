@@ -133,7 +133,14 @@ class CardProducts extends StatelessWidget {
                   width: width*0.4,
                   height: 60,
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: TextCustom(text: description,size: 12.0,color: PaletteColor.grey,fontWeight: FontWeight.normal,textAlign:TextAlign.center,),
+                  child: TextCustom(
+                    text: description,
+                    size: 12.0,
+                    color: PaletteColor.grey,
+                    fontWeight: FontWeight.normal,
+                    textAlign:TextAlign.center,
+                    maxLines: 5,
+                  ),
                 ),
                 Spacer(),
                 Row(

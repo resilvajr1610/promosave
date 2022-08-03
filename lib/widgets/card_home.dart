@@ -12,6 +12,7 @@ class CardHome extends StatelessWidget {
   final status;
   final onTap;
   final onTapFavorite;
+  final favorite;
 
   CardHome({
     required this.urlPhotoProfile,
@@ -22,6 +23,7 @@ class CardHome extends StatelessWidget {
     required this.status,
     required this.onTap,
     required this.onTapFavorite,
+    required this.favorite,
 });
 
   @override
@@ -62,7 +64,7 @@ class CardHome extends StatelessWidget {
                         child:Row(
                             children: [
                               CircleAvatar(
-                                backgroundColor: PaletteColor.primaryColor,
+                                backgroundColor: PaletteColor.greyLight,
                                 backgroundImage: NetworkImage(urlPhotoProfile!=""?urlPhotoProfile:TextConst.LOGO),
                               ),
                               SizedBox(width: 8),
@@ -92,7 +94,7 @@ class CardHome extends StatelessWidget {
               top: 0,
               child: IconButton(
                   onPressed:onTapFavorite,
-                  icon: Icon(Icons.favorite_border,color: PaletteColor.primaryColor,))),
+                  icon: Icon(favorite?Icons.favorite:Icons.favorite_border,color: PaletteColor.primaryColor,))),
         ],
       ),
     );

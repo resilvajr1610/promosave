@@ -90,7 +90,7 @@ class _RequestsScreenState extends State<RequestsScreen> {
                         contSweet: item['quantDoce'],
                         type: item['type'],
                         showDetailsRequests: listRequests[index].showRequests,
-                        status: item['status']==TextConst.ORDERCREATED?'Pendente':item['status'],
+                        status: item['status']!=TextConst.ORDERFINISHED?'Pendente':item['status'],
                         onTapIcon: (){
                           setState(() {
                             listRequests[index].showRequests?listRequests[index].showRequests=false:listRequests[index].showRequests=true;

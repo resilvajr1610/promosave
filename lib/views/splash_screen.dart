@@ -1,4 +1,8 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:promosave/service/local_push_notitication.dart';
+import '../models/notification_model.dart';
 import '../utils/export.dart';
+import 'package:http/http.dart' as http;
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -8,6 +12,17 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+
+  String token = '';
+
+  storeNotificationToken()async{
+    token = (await FirebaseMessaging.instance.getToken())!;
+    FirebaseFirestore.instance.collection('enterprise').doc(FirebaseAuth.instance.currentUser!.uid)
+      .set({
+        'token' : token
+      },SetOptions(merge: true));
+    print('token : $token');
+  }
 
   _mockCheckForSession()async{
 
@@ -51,10 +66,16 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    FirebaseMessaging.instance.getInitialMessage();
+    FirebaseMessaging.onMessage.listen((event) {
+      LocalNotificationService.display(event);
+    });
+
+    storeNotificationToken();
     permissoes();
     _mockCheckForSession();
+    sendNotification('teste title','teste body','d0OcvfTrQ4WtHSet1NL-Ir:APA91bGegR0bOsAHkNV4toOU-N5FXsIMSSPgN1rixfaVFF8fBY56vNEvFrhi3OeU75DACVziOjFlXJF26x1PUIE6uA1yATpBPUgFCvxtDcJ6HNYMLr-l7uBMvMSzg_2YaFQihmIOAPND');
   }
-
 
   @override
   Widget build(BuildContext context) {

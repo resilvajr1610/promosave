@@ -31,6 +31,7 @@ class ShoppingModel{
   int quantBagDoce=0;
   int quantBagMista=0;
   int quantBagSalgada=0;
+  double totalPrice=0.0;
 
   ShoppingModel();
 
@@ -64,6 +65,7 @@ class ShoppingModel{
       "quantBagDoce"      : this.quantBagDoce,
       "quantBagMista"     : this.quantBagMista,
       "quantBagSalgada"   : this.quantBagSalgada,
+      "totalPrice"        : this.totalPrice,
     };
     return map;
   }

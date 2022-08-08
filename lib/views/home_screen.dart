@@ -1,6 +1,8 @@
 import 'package:intl/intl.dart';
 import 'package:promosave/models/error_double_model.dart';
+import 'package:promosave/models/error_list_model.dart';
 import 'package:promosave/models/favorites_model.dart';
+import '../models/notification_model.dart';
 import '../utils/export.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -21,15 +23,18 @@ class _HomeScreenState extends State<HomeScreen> {
   List _allResults = [];
   List _allFavorites = [];
   int productLength=0;
-  String newStatus = 'Tudo';
+  String newStatus = 'Todos';
   var valueCity ='Todos';
-  bool showFavorite=false;
+  bool showFav=false;
+  bool isLoading=false;
+  DocumentSnapshot? snapshot;
 
   _data() async {
 
     var data = await db.collection("enterprise").where('type', isEqualTo: TextConst.ENTERPRISE).get();
     setState(() {
       _allResults = data.docs;
+      print('total : ${_allResults.length}');
     });
     resultSearchList();
     return "complete";
@@ -84,13 +89,37 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  _checkFavorites(String idEnterprise,int index)async{
-    DocumentSnapshot snapshot = await db.collection('user').doc(FirebaseAuth.instance.currentUser!.uid).collection('favorites')
-        .doc(idEnterprise).get();
+  checkEnterprise(idEnterprise,)async{
+    snapshot = await db.collection('enterprise').doc(idEnterprise).get();
+    _checkFavorites();
+  }
 
-    Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
-    listFavorites[index].showFavorites = data?["idEnterprise"]==idEnterprise?true:false;
-    print(listFavorites[index].showFavorites);
+  _checkFavorites()async{
+    bool show = false;
+
+    if(ErrorListModel(snapshot, "favorites")!=[] && listFavorites.length != _resultsList.length ){
+      if(ErrorListModel(snapshot, "favorites").contains(FirebaseAuth.instance.currentUser!.uid)){
+        show = true;
+        listFavorites.add(
+            FavoritesModel(
+                showFavorites: show
+            )
+        );
+      }else{
+        listFavorites.add(
+            FavoritesModel(
+                showFavorites: show
+            )
+        );
+      }
+    }
+    print('listFavorites : ${listFavorites.length}');
+    print('_resultsList :${_resultsList.length}');
+    if(listFavorites.length==_resultsList.length){
+      setState(() {
+        isLoading=false;
+      });
+    }
   }
 
   @override
@@ -226,34 +255,26 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     TextButton(
                         onPressed: ()=>setState(() {
-                          _allResults = [];
                           _data();
-                          newStatus = 'Tudo';
+                          newStatus = 'Todos';
+                          showFav = false;
+                          isLoading=true;
                         }),
-                        child: TextCustom(text: 'Tudo',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal,textAlign: TextAlign.center,)),
+                        child: TextCustom(text: 'Todos',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal,textAlign: TextAlign.center,)),
                     TextButton(
                         onPressed: ()=>setState(() {
-                          _allResults = [];
                           _data();
                           newStatus = 'Fechado';
+                          showFav = false;
+                          isLoading=true;
                         }),
                         child: TextCustom(text: 'Aberto',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal,textAlign: TextAlign.center)),
                     TextButton(
-                        onPressed: ()=>setState(() async{
-                          listFavorites=[];
-                          _allResults = [];
-
-                          listFavorites.add(
-                              FavoritesModel(
-                                  showFavorites: true
-                              )
-                          );
-
-                          var data =await db.collection("user").doc(FirebaseAuth.instance.currentUser!.uid).collection('favorites').get();
-                          setState(() {
-                            _allResults = data.docs;
-                          });
-                          resultSearchList();
+                        onPressed: ()=>setState((){
+                          _data();
+                          newStatus = 'Todos';
+                          showFav = true;
+                          isLoading=true;
                         }),
                         child: TextCustom(text: 'Favoritos',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal,textAlign: TextAlign.center)),
                   ],
@@ -276,7 +297,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 style: TextStyle(fontSize: 16,color: PaletteColor.primaryColor),)
                           );
                         }else {
-                          return ListView.builder(
+                          return _resultsList.length == 0?CircularProgressIndicator():ListView.builder(
                               itemCount: _resultsList.length,
                               itemBuilder: (BuildContext context, index) {
                                 DocumentSnapshot item = _resultsList[index];
@@ -333,41 +354,71 @@ class _HomeScreenState extends State<HomeScreen> {
                                   feesKm: 0.0
                                 );
 
-                                listFavorites.add(
-                                    FavoritesModel(
-                                        showFavorites: false
-                                    )
-                                );
 
-                                _checkFavorites(idEnterprise,index);
-                                
-                                return products>0 && status != newStatus && (city == valueCity || valueCity =='Todos')
-                                    ? CardHome(
-                                  onTap: ()=>Navigator.pushNamed(context, '/products',arguments: args),
-                                  onTapFavorite: (){
-                                    db.collection('user').doc(FirebaseAuth.instance.currentUser!.uid).collection('favorites').doc(idEnterprise).set(
-                                        {
-                                          'idUser':idEnterprise,
-                                          'name':name,
-                                          'products': products,
-                                          'urlPhotoProfile' : urlPhotoProfile,
-                                          'urlPhotoBanner': urlPhotoBanner,
-                                          'startHours': startHours,
-                                          'finishHours': finishHours,
-                                          'address': address,
-                                          'lat': lat,
-                                          'lng': lng,
-                                          'city': city,
-                                        });
-                                  },
-                                  favorite: listFavorites[index].showFavorites,
-                                  urlPhotoProfile: urlPhotoProfile,
-                                  urlPhotoBanner: urlPhotoBanner,
-                                  startHours: startHours,
-                                  finishHours: finishHours,
-                                  name: name.toUpperCase(),
-                                  status: status,
-                                ):Container();
+                                if(listFavorites.length< _allResults.length){
+                                  listFavorites.insert(index,FavoritesModel(showFavorites: false));
+                                  checkEnterprise(idEnterprise);
+                                }
+                                print('insert : ${listFavorites.length}');
+
+                                if(products>0 && status != newStatus && (city == valueCity || valueCity =='Todos')){
+                                    if(showFav){
+                                      if(listFavorites[index].showFavorites){
+                                        return CardHome(
+                                          onTap: ()=>Navigator.pushNamed(context, '/products',arguments: args),
+                                          onTapFavorite: (){
+                                            db.collection('enterprise').doc(idEnterprise).update(
+                                                {
+                                                  'favorites': listFavorites[index].showFavorites?
+                                                  FieldValue.arrayRemove([FirebaseAuth.instance.currentUser!.uid]):
+                                                  FieldValue.arrayUnion([FirebaseAuth.instance.currentUser!.uid])
+                                                });
+                                            setState(() {
+                                              listFavorites[index].showFavorites?
+                                              listFavorites[index].showFavorites=false:
+                                              listFavorites[index].showFavorites=true;
+                                            });
+                                          },
+                                          favorite: listFavorites[index].showFavorites,
+                                          urlPhotoProfile: urlPhotoProfile,
+                                          urlPhotoBanner: urlPhotoBanner,
+                                          startHours: startHours,
+                                          finishHours: finishHours,
+                                          name: name.toUpperCase(),
+                                          status: status,
+                                        );
+                                      }else{
+                                        return Container();
+                                      }
+                                    }else{
+                                      return listFavorites.length!=index?CardHome(
+                                        onTap: ()=>Navigator.pushNamed(context, '/products',arguments: args),
+                                        onTapFavorite: (){
+                                          db.collection('enterprise').doc(idEnterprise).update(
+                                              {
+                                                'favorites': listFavorites[index].showFavorites?
+                                                FieldValue.arrayRemove([FirebaseAuth.instance.currentUser!.uid]):
+                                                FieldValue.arrayUnion([FirebaseAuth.instance.currentUser!.uid])
+                                              });
+                                          setState(() {
+                                            listFavorites[index].showFavorites?
+                                            listFavorites[index].showFavorites=false:
+                                            listFavorites[index].showFavorites=true;
+                                            sendNotification('teste fav','fav body','d0OcvfTrQ4WtHSet1NL-Ir:APA91bGegR0bOsAHkNV4toOU-N5FXsIMSSPgN1rixfaVFF8fBY56vNEvFrhi3OeU75DACVziOjFlXJF26x1PUIE6uA1yATpBPUgFCvxtDcJ6HNYMLr-l7uBMvMSzg_2YaFQihmIOAPND');
+                                          });
+                                        },
+                                        favorite: listFavorites[index].showFavorites,
+                                        urlPhotoProfile: urlPhotoProfile,
+                                        urlPhotoBanner: urlPhotoBanner,
+                                        startHours: startHours,
+                                        finishHours: finishHours,
+                                        name: name.toUpperCase(),
+                                        status: status,
+                                      ):Container();
+                                    }
+                                }else{
+                                  return Container();
+                                }
                               }
                           );
                         }

@@ -55,6 +55,9 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
 
     double distance = await Geolocator.distanceBetween(widget.args.lat,widget.args.lgn,widget.args.homeLat,widget.args.homeLng);
     double  distanceFees = distance /1000;
+    print(widget.args.lat);
+    print(widget.args.lgn);
+
     setState(() {
       totalFees = distanceFees*widget.args.feesKm;
       total = totalSalgada + totalMista + totalDoce + totalFees;
@@ -149,6 +152,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
     _shoppingModel.quantBagDoce = widget.args.quantBagDoce;
     _shoppingModel.quantBagMista = widget.args.quantBagMista;
     _shoppingModel.quantBagSalgada = widget.args.quantBagSalgada;
+    _shoppingModel.totalPrice = total;
 
     int quant = 0;
     if(widget.args.quantSalgada!=0){

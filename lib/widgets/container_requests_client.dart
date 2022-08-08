@@ -1,4 +1,3 @@
-import '../Utils/colors.dart';
 import '../Utils/export.dart';
 
 class ContainerRequestsClient extends StatelessWidget {
@@ -80,7 +79,7 @@ class ContainerRequestsClient extends StatelessWidget {
                     padding: EdgeInsets.only(right: 45,top: 5,bottom: 5),
                     width: width*0.35,
                     child: TextCustom(
-                        text: status,color: PaletteColor.primaryColor,size: 12.0,fontWeight: FontWeight.normal,textAlign: TextAlign.end
+                        text: status==TextConst.ORDERFINISHED?'Entregue':'Pendente',color: PaletteColor.primaryColor,size: 12.0,fontWeight: FontWeight.normal,textAlign: TextAlign.end
                     ),
                   ),
                 ],
@@ -169,7 +168,7 @@ class ContainerRequestsClient extends StatelessWidget {
                 ),
               ],
             ),
-            status =='Entregue'? Container(
+            status ==TextConst.ORDERFINISHED? Container(
               alignment: Alignment.centerRight,
               padding: EdgeInsets.symmetric(horizontal: 45),
               child: ButtonCustom(

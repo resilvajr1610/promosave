@@ -9,7 +9,7 @@ class CardProducts extends StatelessWidget {
   final product;
   final onTapMore;
   final onTapDelete;
-  final selectItem;
+  final int selectItem;
 
   CardProducts({
     required this.available,

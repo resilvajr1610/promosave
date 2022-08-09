@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:promosave/models/shopping_model.dart';
 
 sendNotification(String title,String body,String token)async{
   final data = {
@@ -12,7 +13,7 @@ sendNotification(String title,String body,String token)async{
   try{
     http.Response response = await http.post(Uri.parse('https://fcm.googleapis.com/fcm/send'),headers: <String,String>{
       'Content-Type' : 'application/json',
-      'Authorization':'key=AAAAROyEIVo:APA91bHMOkfyv_T5tR37CAerNTNaB9xrZBUjXGeEFlYa5wOwiOW_z0eLk3B_koHO2j09bJxwYvKDUVXI_qZQTn-Ao9ritR7zygynNTn4haL82s6yOjmgj-Z9UHo7NK0Zd9TB8F64nj-h'
+      'Authorization':'key=${TextConst.KEYTOKEN}'
     },
         body: jsonEncode(<String,dynamic>{
           'notification':<String,dynamic>{

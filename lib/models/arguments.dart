@@ -43,6 +43,8 @@ class Arguments {
   final double otherLat;
   final double otherLng;
 
+  final double medRating;
+
   Arguments({
     required this.idEnterprise,
     required this.idProduct,
@@ -84,5 +86,6 @@ class Arguments {
     this.otherStreet = '',
     this.otherLat = 0.0,
     this.otherLng = 0.0,
+    required this.medRating
   });
 }

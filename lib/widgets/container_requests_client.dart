@@ -12,6 +12,8 @@ class ContainerRequestsClient extends StatelessWidget {
   final enterprise;
   final type;
   final status;
+  final onTapRation;
+  final ratingDouble;
 
   ContainerRequestsClient({
     required this.onTapIcon,
@@ -24,6 +26,8 @@ class ContainerRequestsClient extends StatelessWidget {
     required this.contSweet,
     required this.type,
     required this.status,
+    required this.onTapRation,
+    required this.ratingDouble,
   });
 
   @override
@@ -168,11 +172,11 @@ class ContainerRequestsClient extends StatelessWidget {
                 ),
               ],
             ),
-            status ==TextConst.ORDERFINISHED? Container(
+            status ==TextConst.ORDERFINISHED && ratingDouble==0.0? Container(
               alignment: Alignment.centerRight,
               padding: EdgeInsets.symmetric(horizontal: 45),
               child: ButtonCustom(
-                  onPressed: ()=>Navigator.pushReplacementNamed(context, '/home_enterprise'),
+                  onPressed: onTapRation,
                   text:'Avaliar',
                   size: 12,
                   colorButton: PaletteColor.primaryColor,

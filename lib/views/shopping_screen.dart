@@ -239,28 +239,6 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
     }
   }
 
-  _salvarPagamento()async{
-
-    // Usuario usuario = Usuario();
-    //
-    // usuario.pagamento = pagamento;
-    // usuario.dataPagamento = DateTime.now().toString();
-    // FirebaseAuth auth = FirebaseAuth.instance;
-    // FirebaseUser usuarioLogado = await auth.currentUser();
-    // _idUsuarioLogado = usuarioLogado.uid;
-    // Firestore db = Firestore.instance;
-    // Map<String,dynamic> dadosAtualizar = {
-    //   "pagamento" : pagamento,
-    //   "dataVencimento" : usuario.dataVencimento,
-    //   "dataPagamento" : usuario.dataPagamento
-    // };
-    // db.collection("usuarios")
-    //     .document(_idUsuarioLogado)
-    //     .updateData(dadosAtualizar);
-
-    Navigator.pushReplacementNamed(context,'/splash');
-  }
-
   calculateDelivery(int select)async{
     double distance=0.0;
     double distanceFees=0.0;
@@ -401,7 +379,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16.0, vertical: 10),
-                  child: RatingCustom(rating: 4.0),
+                  child: RatingCustom(rating: widget.args.medRating),
                 )
               ],
             ),

@@ -30,6 +30,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   int quantBagSalgada =0;
   String idProduct = '';
   int available = 0;
+  int selectItem = 0;
 
   String homeAddress = "";
   String homeCity = "";
@@ -92,21 +93,21 @@ class _ProductsScreenState extends State<ProductsScreen> {
       otherLng = data?["otherLng"]??0.0;
       otherVillage = data?["otherVillage"]??"";
       otherStreet = data?["otherStreet"]??"";
-
-      _fees(homeLat,homeLng);
+      _feesFirebase(homeLat,homeLng);
     });
   }
 
-  _feesFirebase()async{
+  _feesFirebase(homeLat,homeLng)async{
     DocumentSnapshot snapshot = await db
         .collection("fees").doc('fees').get();
     Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
     setState(() {
       feesKm = double.parse(data?["feesKm"].replaceAll(',', '.'));
     });
+    _fees(homeLat,homeLng,feesKm);
   }
 
-  _fees(double lat, double long)async{
+  _fees(double lat, double long,feesKm)async{
 
     double distance = await Geolocator.distanceBetween(widget.args.lat,widget.args.lgn,lat,long);
     distanceFees = distance /1000;
@@ -133,7 +134,6 @@ class _ProductsScreenState extends State<ProductsScreen> {
     super.initState();
     _dataProducts();
     _dataUser();
-    _feesFirebase();
   }
 
   @override
@@ -192,7 +192,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 otherLng: otherLng,
                 quantBagDoce: quantBagDoce,
                 quantBagMista: quantBagMista,
-                quantBagSalgada: quantBagSalgada
+                quantBagSalgada: quantBagSalgada,
+                medRating: widget.args.medRating
               );
 
               Navigator.pushNamed(context, '/shopping',arguments: args);
@@ -254,7 +255,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16.0, vertical: 10),
-                  child: RatingCustom(rating: 4.0),
+                  child: RatingCustom(rating: widget.args.medRating),
                 )
               ],
             ),
@@ -372,6 +373,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                           quantSalgada=quantSalgada+1;
                                           byPriceSalgada = byPrice;
                                           quantBagSalgada = quantBag*quantSalgada;
+                                         setState(() {
+                                           selectItem = quantSalgada;
+                                         });
+                                          print(selectItem);
                                         }
                                       }
                                       if(product=="Mista"){
@@ -379,6 +384,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                           quantMista=quantMista+1;
                                           byPriceMista = byPrice;
                                           quantBagMista = quantBag*quantMista;
+                                          setState(() {
+                                            selectItem = quantMista;
+                                          });
+                                          print(selectItem);
                                         }
                                       }
                                       if(product=="Doce"){
@@ -386,6 +395,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                           quantDoce=quantDoce+1;
                                           byPriceDoce = byPrice;
                                           quantBagDoce = quantBag*quantDoce;
+                                          setState(() {
+                                            selectItem = quantDoce;
+                                          });
+                                          print(selectItem);
                                         }
                                       }
                                     }else{
@@ -399,24 +412,27 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                       if(0<quantSalgada){
                                         quantSalgada=quantSalgada-1;
                                         byPriceSalgada = byPrice*quantSalgada;
+                                        selectItem = quantSalgada;
                                       }
                                     }
                                     if(product=="Mista"){
                                       if(0<quantMista){
                                         quantMista=quantMista-1;
                                         quantBagMista = quantBag*quantMista;
+                                        selectItem = quantMista;
                                       }
                                     }
                                     if(product=="Doce"){
                                       if(0<quantDoce){
                                         quantDoce=quantDoce-1;
                                         quantBagDoce = quantBag*quantDoce;
+                                        selectItem = quantDoce;
                                       }
                                     }
                                   });
                                 },
                                 available: available,
-                                selectItem: product=="Salgada"?product=="Mista"?quantDoce:quantSalgada:quantMista,
+                                selectItem: selectItem,
                                 byPrice: byPrice,
                                 inPrice: inPrice,
                                 description: description,

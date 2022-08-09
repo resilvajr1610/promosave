@@ -60,6 +60,7 @@ class _LoginState extends State<RegisterScreen>  with SingleTickerProviderStateM
                 _userModel.phone=_controllerPhone.text;
                 _userModel.cpf=_controllerCPF.text;
                 _userModel.email=_controllerEmail.text;
+                _userModel.date= DateTime.now();
 
                 _saveData(_userModel);
               });

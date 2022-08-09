@@ -5,6 +5,7 @@ class UserModel{
   String email="";
   String cpf="";
   String phone="";
+  DateTime? date;
 
   Map<String,dynamic> toMap(){
     Map<String,dynamic> map = {
@@ -13,6 +14,7 @@ class UserModel{
       "email" : this.email,
       "cpf" : this.cpf,
       "phone" : this.phone,
+      "date" : this.date,
     };
     return map;
   }

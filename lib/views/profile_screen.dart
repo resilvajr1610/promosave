@@ -1,6 +1,7 @@
 import 'package:google_place/google_place.dart';
 import 'package:promosave/models/shopping_model.dart';
 import '../models/alert_model.dart';
+import '../models/error_double_model.dart';
 import '../utils/export.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -38,6 +39,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String otherStreet = "";
   double otherLat = 0.0;
   double otherLng = 0.0;
+
+  double money = 0.0;
+  int contSave = 0;
 
   _showDialog() {
     double width = MediaQuery.of(context).size.width;
@@ -157,10 +161,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }).then((value) => Navigator.pushReplacementNamed(context, '/profile'));
   }
 
+  _moneySaved()async{
+
+    List _allMoney = [];
+    double acumulaMoney =0.0;
+
+    var data = await db.collection("shopping")
+        .where('idClient', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    _allMoney = data.docs;
+    if(_allMoney.length != 0){
+      List<DocumentSnapshot> movimentacoes = data.docs.toList();
+
+      for (int i=0;i<_allMoney.length;i++){
+        DocumentSnapshot item = movimentacoes[i];
+        double moneyDouble = ErrorDoubleModel(item, "totalPrice");
+        acumulaMoney += moneyDouble;
+      }
+      setState(() {
+        money = acumulaMoney;
+        contSave = _allMoney.length;
+      });
+    }else{
+      setState(() {
+        money = 0.0;
+      });
+    }
+    print(money);
+  }
+
   @override
   void initState() {
     super.initState();
     _data();
+    _moneySaved();
   }
 
   @override
@@ -262,14 +296,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             )),
                         child: Center(
                             child: TextCustom(
-                                text: 'R\$\n20',
+                                text: 'R\$\n${money.toStringAsFixed(2).replaceAll('.', ',')}',
+                                maxLines: 2,
                                 size: 16.0,
                                 color: PaletteColor.white,
                                 fontWeight: FontWeight.w500,
-                                textAlign: TextAlign.center)),
+                                textAlign: TextAlign.center
+                            )
+                        ),
                       ),
                       TextCustom(
                           text: 'Dinheiro\npoupado',
+                          maxLines: 2,
                           size: 12.0,
                           color: PaletteColor.primaryColor,
                           fontWeight: FontWeight.normal,
@@ -294,18 +332,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             )),
                         child: Center(
                             child: TextCustom(
-                                text: '4',
+                                text: contSave.toString(),
                                 size: 24.0,
                                 color: PaletteColor.white,
                                 fontWeight: FontWeight.w500,
-                                textAlign: TextAlign.center)),
+                                textAlign: TextAlign.center
+                            )
+                        ),
                       ),
                       TextCustom(
                           text: 'Alimentos\nsalvos',
+                          maxLines: 2,
                           size: 12.0,
                           color: PaletteColor.primaryColor,
                           fontWeight: FontWeight.normal,
-                          textAlign: TextAlign.center),
+                          textAlign: TextAlign.center
+                      ),
                     ],
                   ),
                 ],
@@ -319,7 +361,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       size: 16.0,
                       color: PaletteColor.grey,
                       fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center)),
+                      textAlign: TextAlign.center
+                  )
+              ),
               Container(
                   width: width,
                   alignment: Alignment.centerLeft,
@@ -329,7 +373,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       size: 14.0,
                       color: PaletteColor.primaryColor,
                       fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center)),
+                      textAlign: TextAlign.center
+                  )
+              ),
               InputRegister(
                 icons: Icons.height,
                 sizeIcon: 0.0,

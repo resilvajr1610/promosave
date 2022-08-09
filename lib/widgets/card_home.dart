@@ -13,6 +13,7 @@ class CardHome extends StatelessWidget {
   final onTap;
   final onTapFavorite;
   final favorite;
+  final rating;
 
   CardHome({
     required this.urlPhotoProfile,
@@ -24,6 +25,7 @@ class CardHome extends StatelessWidget {
     required this.onTap,
     required this.onTapFavorite,
     required this.favorite,
+    required this.rating
 });
 
   @override
@@ -73,7 +75,7 @@ class CardHome extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   TextCustom(fontWeight: FontWeight.bold,color: PaletteColor.grey, text: name, size: 12.0,textAlign: TextAlign.center),
-                                  RatingCustom(rating: 4.0)
+                                  RatingCustom(rating: rating)
                                 ],
                               ),
                               Spacer(),

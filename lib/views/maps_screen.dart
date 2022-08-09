@@ -1,4 +1,6 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '../models/error_double_model.dart';
+import '../models/rating_model.dart';
 import '../utils/export.dart';
 
 
@@ -18,6 +20,8 @@ class _MapsScreenState extends State<MapsScreen> {
   double? lon= -48.05764021588343;
   FirebaseFirestore db = FirebaseFirestore.instance;
   var _allResults=[];
+  double rating=0.0;
+  List<RatingModel> listRating=[];
 
   _onMapCreated(GoogleMapController controller){
     _controller.complete(controller);
@@ -63,11 +67,50 @@ class _MapsScreenState extends State<MapsScreen> {
     var data = await db.collection("enterprise")
         .where('type', isEqualTo: TextConst.ENTERPRISE)
         .where('status',isEqualTo: TextConst.APPROVED)
+        .where('products', isNotEqualTo: 0)
         .get();
 
     setState(() {
       _allResults = data.docs;
     });
+
+    print('_allResultsinit : ${_allResults.length}');
+  }
+
+  _ratingEnterprise(idEnterprise,index)async{
+
+    // var idEnterprise = 'YddvP78LW8OjgkYCggEB6DNyBZr2';
+    List _allRating = [];
+    double acumula =0.0;
+
+    var data = await db.collection("shopping")
+        .where('idEnterprise', isEqualTo: idEnterprise)
+        .where('ratingDouble', isNotEqualTo: 0.0)
+        .get();
+    _allRating = data.docs;
+    if(_allRating.length != 0){
+      List<DocumentSnapshot> movimentacoes = data.docs.toList();
+
+      for (int i=0;i<_allRating.length;i++){
+        DocumentSnapshot item = movimentacoes[i];
+        double ratingDouble = ErrorDoubleModel(item, "ratingDouble");
+        acumula += ratingDouble;
+      }
+      setState(() {
+        rating = acumula/_allRating.length;
+      });
+    }else{
+      setState(() {
+        rating = 0.0;
+      });
+    }
+    listRating.add(
+        RatingModel(
+            medRating: rating
+        )
+    );
+
+    print(listRating[index].medRating);
   }
 
   @override
@@ -123,6 +166,11 @@ class _MapsScreenState extends State<MapsScreen> {
 
                   DocumentSnapshot item = _allResults[index];
 
+                  if(listRating.length< _allResults.length){
+                    _ratingEnterprise(item['idUser'],index);
+                    print('listRating.length $listRating.length ===  _allResults.length ${_allResults.length}');
+                  }
+
                   return CarrosselProfessionals(
                     onTap: () {
                       setState(() {
@@ -136,7 +184,7 @@ class _MapsScreenState extends State<MapsScreen> {
                     name: ErrorStringModel(item,'name'),
                     urlBanner: ErrorStringModel(item,'urlPhotoBanner'),
                     urlLogo: ErrorStringModel(item,'urlPhotoProfile'),
-                    rating: 4.0,
+                    rating: listRating.isEmpty?0.0:listRating[index].medRating,
                   );
                 },
               ),

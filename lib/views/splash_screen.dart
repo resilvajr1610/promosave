@@ -17,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   storeNotificationToken()async{
     token = (await FirebaseMessaging.instance.getToken())!;
-    FirebaseFirestore.instance.collection('enterprise').doc(FirebaseAuth.instance.currentUser!.uid)
+    FirebaseFirestore.instance.collection('user').doc(FirebaseAuth.instance.currentUser!.uid)
       .set({
         'token' : token
       },SetOptions(merge: true));
@@ -74,7 +74,6 @@ class _SplashScreenState extends State<SplashScreen> {
     storeNotificationToken();
     permissoes();
     _mockCheckForSession();
-    sendNotification('teste title','teste body','d0OcvfTrQ4WtHSet1NL-Ir:APA91bGegR0bOsAHkNV4toOU-N5FXsIMSSPgN1rixfaVFF8fBY56vNEvFrhi3OeU75DACVziOjFlXJF26x1PUIE6uA1yATpBPUgFCvxtDcJ6HNYMLr-l7uBMvMSzg_2YaFQihmIOAPND');
   }
 
   @override

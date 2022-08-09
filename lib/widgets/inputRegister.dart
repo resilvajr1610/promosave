@@ -16,12 +16,12 @@ class InputRegister extends StatelessWidget {
     required this.controller,
     required this.hint,
     required this.fonts,
-    required this.keyboardType,
-    required this.obscure,
+    this.keyboardType = TextInputType.text,
+    this.obscure = false,
     required this.width,
     this.inputFormatters,
-    required this.sizeIcon,
-    required this.icons,
+    this.sizeIcon = 0.0,
+    this.icons = Icons.clear,
 });
 
   @override

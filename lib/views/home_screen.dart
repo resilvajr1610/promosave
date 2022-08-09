@@ -2,6 +2,7 @@ import 'package:intl/intl.dart';
 import 'package:promosave/models/error_double_model.dart';
 import 'package:promosave/models/error_list_model.dart';
 import 'package:promosave/models/favorites_model.dart';
+import 'package:promosave/models/rating_model.dart';
 import '../models/notification_model.dart';
 import '../utils/export.dart';
 
@@ -19,22 +20,25 @@ class _HomeScreenState extends State<HomeScreen> {
   final _controllerCitiesBroadcast = StreamController<QuerySnapshot>.broadcast();
   FirebaseFirestore db = FirebaseFirestore.instance;
   List<FavoritesModel> listFavorites=[];
+  List<RatingModel> listRating=[];
   List _resultsList = [];
   List _allResults = [];
-  List _allFavorites = [];
   int productLength=0;
   String newStatus = 'Todos';
   var valueCity ='Todos';
   bool showFav=false;
   bool isLoading=false;
   DocumentSnapshot? snapshot;
+  double rating=0.0;
 
   _data() async {
 
-    var data = await db.collection("enterprise").where('type', isEqualTo: TextConst.ENTERPRISE).get();
+    var data = await db.collection("enterprise")
+        .where('type', isEqualTo: TextConst.ENTERPRISE)
+        .where('products', isNotEqualTo: 0)
+        .get();
     setState(() {
       _allResults = data.docs;
-      print('total : ${_allResults.length}');
     });
     resultSearchList();
     return "complete";
@@ -89,37 +93,72 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  checkEnterprise(idEnterprise,)async{
+  checkEnterprise(idEnterprise,index)async{
     snapshot = await db.collection('enterprise').doc(idEnterprise).get();
-    _checkFavorites();
+    _checkFavorites(index);
   }
 
-  _checkFavorites()async{
+  _checkFavorites(index)async{
     bool show = false;
 
-    if(ErrorListModel(snapshot, "favorites")!=[] && listFavorites.length != _resultsList.length ){
+    if(ErrorListModel(snapshot, "favorites")!=[]){
       if(ErrorListModel(snapshot, "favorites").contains(FirebaseAuth.instance.currentUser!.uid)){
         show = true;
-        listFavorites.add(
+        listFavorites.insert(index,
             FavoritesModel(
                 showFavorites: show
             )
         );
       }else{
-        listFavorites.add(
+        listFavorites.insert(index,
             FavoritesModel(
                 showFavorites: show
             )
         );
       }
     }
-    print('listFavorites : ${listFavorites.length}');
-    print('_resultsList :${_resultsList.length}');
-    if(listFavorites.length==_resultsList.length){
+    _data();
+    if(listFavorites.length==_allResults.length){
       setState(() {
         isLoading=false;
       });
     }
+  }
+
+  _ratingEnterprise(idEnterprise,index)async{
+
+    // var idEnterprise = 'YddvP78LW8OjgkYCggEB6DNyBZr2';
+    List _allRating = [];
+    double acumula =0.0;
+
+    var data = await db.collection("shopping")
+        .where('idEnterprise', isEqualTo: idEnterprise)
+        .where('ratingDouble', isNotEqualTo: 0.0)
+        .get();
+      _allRating = data.docs;
+      if(_allRating.length != 0){
+        List<DocumentSnapshot> movimentacoes = data.docs.toList();
+
+        for (int i=0;i<_allRating.length;i++){
+          DocumentSnapshot item = movimentacoes[i];
+          double ratingDouble = ErrorDoubleModel(item, "ratingDouble");
+          acumula += ratingDouble;
+        }
+        setState(() {
+          rating = acumula/_allRating.length;
+        });
+      }else{
+        setState(() {
+          rating = 0.0;
+        });
+      }
+    listRating.add(
+        RatingModel(
+            medRating: rating
+        )
+    );
+
+      print(listRating[index].medRating);
   }
 
   @override
@@ -351,15 +390,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                   byPriceMista:'',
                                   lat: lat,
                                   lgn: lng,
-                                  feesKm: 0.0
+                                  feesKm: 0.0,
+                                  medRating:listRating.isEmpty ||listRating.length != index+1 ?0.0:listRating[index].medRating
                                 );
 
-
                                 if(listFavorites.length< _allResults.length){
-                                  listFavorites.insert(index,FavoritesModel(showFavorites: false));
-                                  checkEnterprise(idEnterprise);
+                                  checkEnterprise(idEnterprise,index);
+                                  _ratingEnterprise(idEnterprise,index);
                                 }
-                                print('insert : ${listFavorites.length}');
 
                                 if(products>0 && status != newStatus && (city == valueCity || valueCity =='Todos')){
                                     if(showFav){
@@ -386,12 +424,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                           finishHours: finishHours,
                                           name: name.toUpperCase(),
                                           status: status,
+                                          rating: listRating.isEmpty?0.0:listRating[index].medRating,
                                         );
                                       }else{
                                         return Container();
                                       }
                                     }else{
                                       return listFavorites.length!=index?CardHome(
+                                        rating: listRating.isEmpty?0.0:listRating[index].medRating,
                                         onTap: ()=>Navigator.pushNamed(context, '/products',arguments: args),
                                         onTapFavorite: (){
                                           db.collection('enterprise').doc(idEnterprise).update(
@@ -404,10 +444,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                             listFavorites[index].showFavorites?
                                             listFavorites[index].showFavorites=false:
                                             listFavorites[index].showFavorites=true;
-                                            sendNotification('teste fav','fav body','d0OcvfTrQ4WtHSet1NL-Ir:APA91bGegR0bOsAHkNV4toOU-N5FXsIMSSPgN1rixfaVFF8fBY56vNEvFrhi3OeU75DACVziOjFlXJF26x1PUIE6uA1yATpBPUgFCvxtDcJ6HNYMLr-l7uBMvMSzg_2YaFQihmIOAPND');
+                                            sendNotification('teste fav','fav body','${TextConst.TOKENTESTE}');
                                           });
                                         },
-                                        favorite: listFavorites[index].showFavorites,
+                                        favorite: listFavorites.isEmpty?false:listFavorites[index].showFavorites,
                                         urlPhotoProfile: urlPhotoProfile,
                                         urlPhotoBanner: urlPhotoBanner,
                                         startHours: startHours,

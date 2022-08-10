@@ -16,7 +16,7 @@ class DrawerCustom extends StatelessWidget {
     return SingleChildScrollView(
       child: Container(
         width: width*0.7,
-        height: height*0.9,
+        height: height,
         color: Colors.white,
         padding: EdgeInsets.all(8),
         child: Column(
@@ -81,6 +81,7 @@ class DrawerCustom extends StatelessWidget {
                 child: Icon(Icons.logout,color: PaletteColor.primaryColor)
               ),
             ),
+            SizedBox(height: height*0.1,)
           ],
         ),
       ),

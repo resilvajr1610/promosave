@@ -95,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(height: height*0.06),
                 Container(
                   width: width*0.8,
-                  child: TextCustom(text: 'E - mail',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal,textAlign: TextAlign.start),
+                  child: TextCustom(text: 'E-mail',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal,textAlign: TextAlign.start),
                 ),
                 InputRegister(
                   icons: Icons.height,
@@ -103,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: width*0.8,
                   obscure: false,
                   controller: _controllerEmail,
-                  hint:'E - mail',
+                  hint:'E-mail',
                   fonts: 14.0,
                   keyboardType: TextInputType.text,
                 ),

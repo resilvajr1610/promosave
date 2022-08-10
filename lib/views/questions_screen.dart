@@ -92,7 +92,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
               Container(
                 width: width*0.75,
                 child: TextCustom(
-                    text: 'Dúvidas? Entre em contato pelo nosso WhatsApp',
+                    text: 'Dúvidas? Chamar no WhatsApp',
                     size: 16.0,
                     color: PaletteColor.grey,
                     fontWeight: FontWeight.normal,

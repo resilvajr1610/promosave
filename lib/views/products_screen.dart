@@ -284,7 +284,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       padding: EdgeInsets.symmetric(horizontal: 20),
                       width: width * 0.65,
                       child: TextCustom(
-                          text: 'Endereço : ' + widget.args.address,
+                          text: 'Endereço: ' + widget.args.address,
                           fontWeight: FontWeight.normal,
                           color: PaletteColor.grey,
                           size: 12.0,
@@ -294,7 +294,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       padding: EdgeInsets.symmetric(horizontal: 20),
                       width: width * 0.65,
                       child: TextCustom(
-                          text: 'Taxa de entrega : R\$ ${total.toStringAsFixed(2).replaceAll('.', ',')}',
+                          text: 'Taxa de entrega: R\$ ${total.toStringAsFixed(2).replaceAll('.', ',')}',
                           fontWeight: FontWeight.normal,
                           color: PaletteColor.grey,
                           size: 12.0,

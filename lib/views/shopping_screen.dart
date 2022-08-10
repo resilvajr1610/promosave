@@ -1,5 +1,6 @@
 import 'package:mercado_pago_mobile_checkout/mercado_pago_mobile_checkout.dart';
 import 'package:http/http.dart' as http;
+import '../models/notification_model.dart';
 import '../models/shopping_model.dart';
 import '../utils/export.dart';
 import 'package:geolocator/geolocator.dart';
@@ -40,6 +41,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
   String productName='';
   bool isLoading=false;
   int order=0;
+  String token='';
 
   _dataProduts()async{
     enterpriseName = widget.args.enterpriseName;
@@ -192,12 +194,13 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
     _saveShopping();
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _shoppingModel = ShoppingModel.createId();
-    _dataProduts();
-    _dataUser();
+  dataEnterprise()async{
+    DocumentSnapshot snapshot = await db.collection("enterprise").doc(widget.args.idEnterprise).get();
+    Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+    setState(() {
+      token = data?["token"];
+      print(token);
+    });
   }
 
   _getPagamento()async{
@@ -275,6 +278,15 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _shoppingModel = ShoppingModel.createId();
+    _dataProduts();
+    _dataUser();
+    dataEnterprise();
+  }
+
+  @override
   Widget build(BuildContext context) {
 
     double width = MediaQuery.of(context).size.width;
@@ -315,6 +327,9 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
         sizeIcon: 0.0,
         onTap: ()async{
           _getOrder();
+          if(token!=''){
+            sendNotification('Novo Pedido!','Cliente ${FirebaseAuth.instance.currentUser!.displayName}',token);
+          }
           ///temporariamente comentado para testes sem mercado pago, mas função está funcionando perfeitamente
           // PaymentResult result = await MercadoPagoMobileCheckout.startCheckout(
           //   _publicKey,
@@ -408,7 +423,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                       width: width * 0.65,
                       child: TextCustom(
                           maxLines: 3,
-                          text: 'Endereço : ' + widget.args.address,
+                          text: 'Endereço: ' + widget.args.address,
                           fontWeight: FontWeight.normal,
                           color: PaletteColor.grey,
                           size: 12.0,
@@ -418,7 +433,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                       padding: EdgeInsets.symmetric(horizontal: 20),
                       width: width * 0.65,
                       child: TextCustom(
-                          text: 'Taxa de entrega : R\$ ${totalFees.toStringAsFixed(2).replaceAll('.', ',')}',
+                          text: 'Taxa de entrega: R\$ ${totalFees.toStringAsFixed(2).replaceAll('.', ',')}',
                           fontWeight: FontWeight.normal,
                           color: PaletteColor.grey,
                           size: 12.0,

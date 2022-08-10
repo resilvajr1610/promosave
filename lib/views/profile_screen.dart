@@ -476,34 +476,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   : Container(),
               SizedBox(height: 10),
               homeAddress == "" || workAddress == "" || otherStreet == ""
-                  ? Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () => _showDialog(),
-                          child: Container(
-                            alignment: Alignment.topCenter,
-                            width: width * 0.6,
-                            padding: EdgeInsets.all(10),
-                            margin: EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 5),
-                            decoration: BoxDecoration(
-                                color: PaletteColor.greyLight,
-                                borderRadius: BorderRadius.circular(5)),
-                            child: TextCustom(
-                                size: 14.0,
-                                fontWeight: FontWeight.normal,
-                                color: PaletteColor.grey,
-                                text: 'Adicionar novo endereço',
-                                textAlign: TextAlign.center),
-                          ),
+              ?TextButton(
+                style: TextButton.styleFrom(
+                  backgroundColor: PaletteColor.greyLight,
+                ),
+                onPressed: () => _showDialog(),
+                child: TextCustom(
+                          size: 14.0,
+                          fontWeight: FontWeight.normal,
+                          color: PaletteColor.grey,
+                          text: 'Adicionar novo endereço',
+                          textAlign: TextAlign.center
                         ),
-                        Spacer()
-                      ],
-                    )
-                  : Container(),
+              ): Container(),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ButtonCustom(
+                  customWidth: 0.85,
                   onPressed: () {},
                   text: "Salvar",
                   size: 0,

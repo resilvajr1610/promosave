@@ -268,7 +268,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         controller: _controllerSearch,
                         textAlign: TextAlign.start,
                         keyboardType: TextInputType.text,
-                        textAlignVertical: TextAlignVertical.center,
+                        textAlignVertical: TextAlignVertical.bottom,
                         style: TextStyle(
                           color: PaletteColor.grey,
                           fontSize: 16.0,

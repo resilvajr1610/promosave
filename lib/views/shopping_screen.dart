@@ -326,18 +326,16 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
         text: 'Pagamento',
         sizeIcon: 0.0,
         onTap: ()async{
-          _getOrder();
-          if(token!=''){
-            sendNotification('Novo Pedido!','Cliente ${FirebaseAuth.instance.currentUser!.displayName}',token);
+          PaymentResult result = await MercadoPagoMobileCheckout.startCheckout(
+            _publicKey,
+            _idPagamento,
+          );
+          if(result.status == "approved"){
+            _getOrder();
+            if(token!=''){
+              sendNotification('Novo Pedido!','Cliente ${FirebaseAuth.instance.currentUser!.displayName}',token);
+            }
           }
-          ///temporariamente comentado para testes sem mercado pago, mas função está funcionando perfeitamente
-          // PaymentResult result = await MercadoPagoMobileCheckout.startCheckout(
-          //   _publicKey,
-          //   _idPagamento,
-          // );
-          // if(result.status == "approved"){
-          //   _getOrder();
-          // }
         },
       ),
       body: SingleChildScrollView(

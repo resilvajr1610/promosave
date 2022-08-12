@@ -50,7 +50,7 @@ class DrawerCustom extends StatelessWidget {
             SizedBox(height: height*0.08),
             TitleDrawer(
               onTap: ()=>Navigator.pushNamed(context, '/navigation'),
-              title: 'home',
+              title: 'Home',
               icon: Icons.home_outlined,
             ),
             TitleDrawer(

@@ -84,19 +84,20 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
         child: Container(
           color: PaletteColor.white,
           padding: EdgeInsets.symmetric(vertical: 5,horizontal: 10),
-          child: Row(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Icon(FontAwesomeIcons.whatsapp,color: PaletteColor.green,size: 40,),
-              SizedBox(width:10),
+              SizedBox(height:10),
               Container(
-                width: width*0.75,
+                width: width,
                 child: TextCustom(
                     text: 'Dúvidas? Chamar no WhatsApp',
                     size: 16.0,
                     color: PaletteColor.grey,
                     fontWeight: FontWeight.normal,
-                    textAlign: TextAlign.start
+                    textAlign: TextAlign.center
                 ),
               )
             ],

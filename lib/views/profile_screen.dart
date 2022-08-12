@@ -296,7 +296,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             )),
                         child: Center(
                             child: TextCustom(
-                                text: 'R\$\n${money.toStringAsFixed(2).replaceAll('.', ',')}',
+                                text: '${money.toStringAsFixed(2).replaceAll('.', ',')}',
                                 maxLines: 2,
                                 size: 16.0,
                                 color: PaletteColor.white,
@@ -306,7 +306,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                       TextCustom(
-                          text: 'Dinheiro\npoupado',
+                          text: 'Dinheiro\npoupado (R\$)',
                           maxLines: 2,
                           size: 12.0,
                           color: PaletteColor.primaryColor,

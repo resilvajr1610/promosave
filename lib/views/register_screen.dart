@@ -194,7 +194,7 @@ class _LoginState extends State<RegisterScreen>  with SingleTickerProviderStateM
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: TextCustom(text: 'E - mail',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal,textAlign: TextAlign.center),
+                child: TextCustom(text: 'E-mail',color: PaletteColor.primaryColor,size: 14.0,fontWeight: FontWeight.normal,textAlign: TextAlign.center),
               ),
               InputRegister(
                 icons: Icons.height,

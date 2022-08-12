@@ -1,3 +1,4 @@
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../models/error_double_model.dart';
 import '../models/rating_model.dart';
@@ -22,6 +23,7 @@ class _MapsScreenState extends State<MapsScreen> {
   var _allResults=[];
   double rating=0.0;
   List<RatingModel> listRating=[];
+  Position? position;
 
   _onMapCreated(GoogleMapController controller){
     _controller.complete(controller);
@@ -113,10 +115,43 @@ class _MapsScreenState extends State<MapsScreen> {
     print(listRating[index].medRating);
   }
 
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      await Geolocator.openLocationSettings();
+      return Future.error('Location services are disabled.');
+    }
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+    return await Geolocator.getCurrentPosition();
+  }
+
+  _local()async{
+    position = await _determinePosition();
+    lat = position!.latitude;
+    lon = position!.longitude;
+    print('lat : $lat');
+    print('lon : $lon');
+    _locationProfessional(lat!,lon!);
+  }
+
   @override
   void initState() {
     super.initState();
     _data();
+    _local();
   }
 
   @override

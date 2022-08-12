@@ -42,7 +42,7 @@ class _WhoWeAreScreenState extends State<WhoWeAreScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: TextCustom(text: 'Somos uma Startup que atua na luta contra o desperdício, fornecendo alimentos que seriam descartados por terem sido produzidos em excesso a um preço acessível.',
-                  maxLines: 3,
+                  maxLines: 6,
                   color: PaletteColor.grey,size: 14.0,fontWeight: FontWeight.normal,textAlign: TextAlign.start,),
               ),
               SizedBox(height: 10),
@@ -55,7 +55,7 @@ class _WhoWeAreScreenState extends State<WhoWeAreScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: TextCustom(text: 'Fornecer comida de qualidade a um preço acessível para todos e evitando o desperdício. ',
-                  maxLines: 3,
+                  maxLines: 6,
                   color: PaletteColor.grey,size: 14.0,fontWeight: FontWeight.normal,textAlign: TextAlign.start,),
               ),
               SizedBox(height: 10),

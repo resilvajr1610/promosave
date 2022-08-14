@@ -23,7 +23,7 @@ class _RequestsScreenState extends State<RequestsScreen> {
   var controller = TextEditingController();
 
   data()async{
-    var data = await db.collection("shopping").where('idClient', isEqualTo: FirebaseAuth.instance.currentUser!.uid).get();
+    var data = await db.collection("shopping").orderBy('order',descending: true).where('idClient', isEqualTo: FirebaseAuth.instance.currentUser!.uid).get();
 
     setState(() {
       _allResults = data.docs;
@@ -195,6 +195,9 @@ class _RequestsScreenState extends State<RequestsScreen> {
                             contMixed: item['quantMista'],
                             contSalt: item['quantSalgada'],
                             contSweet: item['quantDoce'],
+                            priceDoce: item['priceDoce'],
+                            priceSalgada: item['priceSalgada'],
+                            priceMista: item['priceMista'],
                             type: item['type'],
                             showDetailsRequests: listRequests[index].showRequests,
                             status: item['status']!=TextConst.ORDERFINISHED?'Pendente':item['status'],

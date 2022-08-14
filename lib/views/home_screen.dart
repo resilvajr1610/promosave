@@ -157,8 +157,6 @@ class _HomeScreenState extends State<HomeScreen> {
             medRating: rating
         )
     );
-
-      print(listRating[index].medRating);
   }
 
   @override

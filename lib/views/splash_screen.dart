@@ -1,8 +1,12 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:promosave/service/local_push_notitication.dart';
+import 'package:provider/provider.dart';
 import '../models/notification_model.dart';
+import '../service/app_settings.dart';
 import '../utils/export.dart';
 import 'package:http/http.dart' as http;
+
+import 'first_acess_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -14,6 +18,13 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
 
   String token = '';
+  String start = '';
+
+  readAcess(){
+    start = context.watch<AppSettings>().acess;
+    setState(() {});
+    print('teste : $start');
+  }
 
   storeNotificationToken()async{
     token = (await FirebaseMessaging.instance.getToken())!;
@@ -25,7 +36,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _mockCheckForSession()async{
-
     if(FirebaseAuth.instance.currentUser!=null){
       await Future.delayed(Duration(seconds: 3),(){
         Navigator.of(context).pushReplacement(
@@ -63,6 +73,22 @@ class _SplashScreenState extends State<SplashScreen> {
       await Permission.locationAlways.request();
   }
 
+  verificarion()async{
+
+    print('acess : $start');
+    await Future.delayed(Duration(seconds: 3),(){
+      if(start==''){
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                  builder: ( BuildContext context) => FirstAcessScreen()
+              )
+          );
+      }else{
+        _mockCheckForSession();
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -70,16 +96,16 @@ class _SplashScreenState extends State<SplashScreen> {
     FirebaseMessaging.onMessage.listen((event) {
       LocalNotificationService.display(event);
     });
-
     storeNotificationToken();
     permissoes();
-    _mockCheckForSession();
+    verificarion();
   }
 
   @override
   Widget build(BuildContext context) {
 
     double height = MediaQuery.of(context).size.height;
+    readAcess();
 
     return Scaffold(
         backgroundColor: PaletteColor.primaryColor,

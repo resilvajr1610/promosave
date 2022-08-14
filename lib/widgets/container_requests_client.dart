@@ -8,6 +8,9 @@ class ContainerRequestsClient extends StatelessWidget {
   final contMixed;
   final contSalt;
   final contSweet;
+  final priceDoce;
+  final priceMista;
+  final priceSalgada;
   final date;
   final enterprise;
   final type;
@@ -28,6 +31,9 @@ class ContainerRequestsClient extends StatelessWidget {
     required this.status,
     required this.onTapRation,
     required this.ratingDouble,
+    required this.priceDoce,
+    required this.priceMista,
+    required this.priceSalgada,
   });
 
   @override
@@ -106,7 +112,7 @@ class ContainerRequestsClient extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 45),
                   child: TextCustom(
-                      text: 'R\$ ${(contMixed*10)},00',color: PaletteColor.grey,size: 12.0,fontWeight: FontWeight.normal,textAlign: TextAlign.start
+                      text: 'R\$ ${(contMixed*priceMista).toStringAsFixed(2).replaceAll('.', ',')}',color: PaletteColor.grey,size: 12.0,fontWeight: FontWeight.normal,textAlign: TextAlign.start
                   ),
                 ),
               ],
@@ -124,7 +130,7 @@ class ContainerRequestsClient extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 45),
                   child: TextCustom(
-                      text: 'R\$ ${(contSalt*10)},00',color: PaletteColor.grey,size: 12.0,fontWeight: FontWeight.normal,textAlign: TextAlign.start
+                      text: 'R\$ ${(contSalt*priceSalgada).toStringAsFixed(2).replaceAll('.', ',')}',color: PaletteColor.grey,size: 12.0,fontWeight: FontWeight.normal,textAlign: TextAlign.start
                   ),
                 ),
               ],
@@ -142,7 +148,7 @@ class ContainerRequestsClient extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 45),
                   child: TextCustom(
-                      text: 'R\$ ${(contSweet*10)},00',color: PaletteColor.grey,size: 12.0,fontWeight: FontWeight.normal,textAlign: TextAlign.start
+                      text: 'R\$ ${(contSweet*priceDoce).toStringAsFixed(2).replaceAll('.', ',')}',color: PaletteColor.grey,size: 12.0,fontWeight: FontWeight.normal,textAlign: TextAlign.start
                   ),
                 ),
               ],
@@ -167,7 +173,7 @@ class ContainerRequestsClient extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 45),
                   child: TextCustom(
-                      text: 'R\$ ${((contSalt*10) + (contSweet*10) + (contMixed*10)).toString()+',00'}',color: PaletteColor.grey,size: 12.0,fontWeight: FontWeight.bold,textAlign: TextAlign.start
+                      text: 'R\$ ${((contSalt*priceSalgada) + (contSweet*priceDoce) + (contMixed*priceMista)).toStringAsFixed(2).replaceAll('.', ',')}',color: PaletteColor.grey,size: 12.0,fontWeight: FontWeight.bold,textAlign: TextAlign.start
                   ),
                 ),
               ],

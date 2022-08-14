@@ -149,9 +149,6 @@ class _ProductsScreenState extends State<ProductsScreen> {
           onTap: () {
             if(quantSalgada>0 || quantMista>0 || quantDoce>0){
 
-              print(widget.args.lat);
-              print(widget.args.lgn);
-
               Arguments args = Arguments(
                 idProduct: idProduct,
                 available: available,
@@ -315,7 +312,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                           size: 25,
                         ),
                         TextCustom(
-                            text: 'Ver no mapa',
+                            text: 'Ver trajeto',
                             fontWeight: FontWeight.bold,
                             color: PaletteColor.primaryColor,
                             size: 12.0,

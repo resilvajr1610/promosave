@@ -4,8 +4,9 @@ class DrawerCustom extends StatelessWidget {
 
   String enterprise;
   final photo;
+  bool showLower;
 
-  DrawerCustom({required this.enterprise, required this.photo});
+  DrawerCustom({required this.enterprise, required this.photo,this.showLower=false});
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +82,7 @@ class DrawerCustom extends StatelessWidget {
                 child: Icon(Icons.logout,color: PaletteColor.primaryColor)
               ),
             ),
-            SizedBox(height: height*0.1,)
+            showLower?SizedBox(height: height*0.1,):Container()
           ],
         ),
       ),

@@ -2,8 +2,11 @@ import 'package:intl/intl.dart';
 import 'package:promosave/models/error_double_model.dart';
 import 'package:promosave/models/error_list_model.dart';
 import 'package:promosave/models/favorites_model.dart';
+import 'package:promosave/models/produts_model.dart';
 import 'package:promosave/models/rating_model.dart';
+import 'package:provider/provider.dart';
 import '../models/notification_model.dart';
+import '../service/app_settings.dart';
 import '../utils/export.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -35,7 +38,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     var data = await db.collection("enterprise")
         .where('type', isEqualTo: TextConst.ENTERPRISE)
-        .where('products', isNotEqualTo: 0)
         .get();
     setState(() {
       _allResults = data.docs;
@@ -127,7 +129,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _ratingEnterprise(idEnterprise,index)async{
 
-    // var idEnterprise = 'YddvP78LW8OjgkYCggEB6DNyBZr2';
     List _allRating = [];
     double acumula =0.0;
 
@@ -162,6 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    context.read<AppSettings>().setString('sim');
     userFirebase();
     _controllerSearch.addListener(_search);
     _addListenerCities();
@@ -177,6 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
       drawer: DrawerCustom(
         enterprise: FirebaseAuth.instance.currentUser!.displayName!,
         photo: FirebaseAuth.instance.currentUser!.photoURL,
+        showLower: true,
       ),
       backgroundColor: PaletteColor.white,
       appBar: AppBar(
@@ -422,14 +425,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                           finishHours: finishHours,
                                           name: name.toUpperCase(),
                                           status: status,
-                                          rating: listRating.isEmpty?0.0:listRating[index].medRating,
+                                          rating: listRating.length != index+1?0.0:listRating[index].medRating,
                                         );
                                       }else{
                                         return Container();
                                       }
                                     }else{
                                       return listFavorites.length!=index?CardHome(
-                                        rating: listRating.isEmpty?0.0:listRating[index].medRating,
+                                        rating: listRating.length!=index+1?0.0:listRating[index].medRating,
                                         onTap: ()=>Navigator.pushNamed(context, '/products',arguments: args),
                                         onTapFavorite: (){
                                           db.collection('enterprise').doc(idEnterprise).update(
@@ -445,7 +448,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             sendNotification('teste fav','fav body','${TextConst.TOKENTESTE}');
                                           });
                                         },
-                                        favorite: listFavorites.isEmpty?false:listFavorites[index].showFavorites,
+                                        favorite: listFavorites.length != index+1?false:listFavorites[index].showFavorites,
                                         urlPhotoProfile: urlPhotoProfile,
                                         urlPhotoBanner: urlPhotoBanner,
                                         startHours: startHours,

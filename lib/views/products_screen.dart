@@ -1,4 +1,5 @@
 import 'package:geolocator/geolocator.dart';
+import '../models/produts_model.dart';
 import '../models/shopping_model.dart';
 import '../utils/export.dart';
 
@@ -30,7 +31,6 @@ class _ProductsScreenState extends State<ProductsScreen> {
   int quantBagSalgada =0;
   String idProduct = '';
   int available = 0;
-  int selectItem = 0;
 
   String homeAddress = "";
   String homeCity = "";
@@ -52,6 +52,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
   String otherStreet = "";
   double otherLat = 0.0;
   double otherLng = 0.0;
+
+  List<ProductsModel> listItemProducts=[];
 
   _dataProducts() async {
     var data = await db
@@ -207,7 +209,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
               height: 120,
               width: width,
               decoration: BoxDecoration(
-                color: PaletteColor.grey,
+                color: PaletteColor.greyLight,
                 image: DecorationImage(
                   image: NetworkImage(widget.args.banner != ""
                       ? widget.args.banner
@@ -230,7 +232,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   padding: const EdgeInsets.all(16),
                   child: CircleAvatar(
                     radius: 30,
-                    backgroundColor: PaletteColor.primaryColor,
+                    backgroundColor: PaletteColor.greyLight,
                     backgroundImage: NetworkImage(
                         widget.args.enterprisePicture != ""
                             ? widget.args.enterprisePicture
@@ -361,6 +363,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
                               final product = ErrorListText(item, 'product');
                               final quantBag = ErrorListNumber(item, 'quantBag');
 
+                              listItemProducts.add(
+                                  ProductsModel(
+                                    selectItem: 0,
+                                  )
+                              );
+
                               return CardProducts(
                                 onTapMore: (){
                                   setState(() {
@@ -371,9 +379,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                           byPriceSalgada = byPrice;
                                           quantBagSalgada = quantBag*quantSalgada;
                                          setState(() {
-                                           selectItem = quantSalgada;
+                                           listItemProducts[index].selectItem = quantSalgada;
                                          });
-                                          print(selectItem);
+                                          print(listItemProducts[index].selectItem);
                                         }
                                       }
                                       if(product=="Mista"){
@@ -382,9 +390,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                           byPriceMista = byPrice;
                                           quantBagMista = quantBag*quantMista;
                                           setState(() {
-                                            selectItem = quantMista;
+                                            listItemProducts[index].selectItem = quantMista;
                                           });
-                                          print(selectItem);
+                                          print(listItemProducts[index].selectItem);
                                         }
                                       }
                                       if(product=="Doce"){
@@ -393,9 +401,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                           byPriceDoce = byPrice;
                                           quantBagDoce = quantBag*quantDoce;
                                           setState(() {
-                                            selectItem = quantDoce;
+                                            listItemProducts[index].selectItem = quantDoce;
                                           });
-                                          print(selectItem);
+                                          print(listItemProducts[index].selectItem);
                                         }
                                       }
                                     }else{
@@ -409,27 +417,27 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                       if(0<quantSalgada){
                                         quantSalgada=quantSalgada-1;
                                         byPriceSalgada = byPrice*quantSalgada;
-                                        selectItem = quantSalgada;
+                                        listItemProducts[index].selectItem = quantSalgada;
                                       }
                                     }
                                     if(product=="Mista"){
                                       if(0<quantMista){
                                         quantMista=quantMista-1;
                                         quantBagMista = quantBag*quantMista;
-                                        selectItem = quantMista;
+                                        listItemProducts[index].selectItem = quantMista;
                                       }
                                     }
                                     if(product=="Doce"){
                                       if(0<quantDoce){
                                         quantDoce=quantDoce-1;
                                         quantBagDoce = quantBag*quantDoce;
-                                        selectItem = quantDoce;
+                                        listItemProducts[index].selectItem = quantDoce;
                                       }
                                     }
                                   });
                                 },
                                 available: available,
-                                selectItem: selectItem,
+                                selectItem: listItemProducts[index].selectItem,
                                 byPrice: byPrice,
                                 inPrice: inPrice,
                                 description: description,

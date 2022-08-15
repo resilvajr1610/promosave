@@ -145,6 +145,7 @@ class _RequestsScreenState extends State<RequestsScreen> {
       drawer: DrawerCustom(
         enterprise: FirebaseAuth.instance.currentUser!.displayName!,
         photo: FirebaseAuth.instance.currentUser!.photoURL,
+        showLower: true,
       ),
       backgroundColor: PaletteColor.white,
       appBar: AppBar(

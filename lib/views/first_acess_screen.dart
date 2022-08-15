@@ -57,7 +57,6 @@ class _FirstAcessScreenState extends State<FirstAcessScreen> {
                       currentIndex!=2?SizedBox(height: MediaQuery.of(context).size.height*0.2):SizedBox(height: MediaQuery.of(context).size.height*0.1),
                       currentIndex==2?TextButton(
                           onPressed: (){
-                            context.read<AppSettings>().setString('sim');
                             Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
                                     builder: ( BuildContext context) => InitialScreen()

@@ -493,7 +493,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: ButtonCustom(
                   customWidth: 0.85,
-                  onPressed: () {},
+                  onPressed: () {
+                    if(_controllerPhone.text.isNotEmpty){
+                      db.collection('user').doc(FirebaseAuth.instance.currentUser!.uid).update({'phone':_controllerPhone.text})
+                          .then((value) =>   AlertModel().alert('Sucesso!', 'Seu número foi atualizado!', PaletteColor.green, PaletteColor.grey, context, [
+                        ButtonCustom(
+                          size: 20.0,
+                          onPressed: ()=>Navigator.pop(context),
+                          text: 'OK',
+                        )
+                      ]));
+                    }else{
+                     AlertModel().alert('Erro', 'Preencha seu número corretametne', PaletteColor.red, PaletteColor.red, context, [
+                       ButtonCustom(
+                         size: 20.0,
+                         onPressed: ()=>Navigator.pop(context),
+                         text: 'OK',
+                       )
+                     ]);
+                    }
+                  },
                   text: "Salvar",
                   size: 0,
                   colorButton: PaletteColor.primaryColor,

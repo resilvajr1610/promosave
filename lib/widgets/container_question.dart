@@ -31,6 +31,7 @@ class ContainerQuestion extends StatelessWidget {
                 width: width*0.8,
                 child: TextCustom(
                     text: question,
+                    maxLines: 5,
                     size: 15.0,
                     color: PaletteColor.grey,
                     fontWeight: FontWeight.bold,
@@ -46,6 +47,7 @@ class ContainerQuestion extends StatelessWidget {
           width: width,
           child: TextCustom(
               text: answer,
+              maxLines: 5,
               size: 14.0,
               color: PaletteColor.grey,
               fontWeight: FontWeight.normal,

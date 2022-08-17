@@ -152,12 +152,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   deleteAddress(var place){
     db.collection('user').doc(FirebaseAuth.instance.currentUser!.uid).update({
-      "${place}address":"",
-      "${place}street" :"",
-      "${place}village":"",
-      "${place}city"   :"",
-      "${place}lat"    :0.0,
-      "${place}lng"    :0.0,
+      "${place}Address":"",
+      "${place}Street" :"",
+      "${place}Village":"",
+      "${place}City"   :"",
+      "${place}Lat"    :0.0,
+      "${place}Lng"    :0.0,
     }).then((value) => Navigator.pushReplacementNamed(context, '/profile'));
   }
 
@@ -204,7 +204,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Scaffold(
       drawer: DrawerCustom(
-        enterprise: FirebaseAuth.instance.currentUser!.displayName!,
+        enterprise: FirebaseAuth.instance.currentUser!.displayName==null?'':FirebaseAuth.instance.currentUser!.displayName!,
         photo: FirebaseAuth.instance.currentUser!.photoURL,
       ),
       backgroundColor: PaletteColor.white,

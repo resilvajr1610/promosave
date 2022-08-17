@@ -67,7 +67,7 @@ class CardHome extends StatelessWidget {
                             children: [
                               CircleAvatar(
                                 backgroundColor: PaletteColor.greyLight,
-                                backgroundImage: NetworkImage(urlPhotoProfile!=""?urlPhotoProfile:TextConst.LOGO),
+                                backgroundImage: NetworkImage(urlPhotoProfile!=""?urlPhotoProfile:TextConst.PRODUCTSTANDARD),
                               ),
                               SizedBox(width: 8),
                               Column(

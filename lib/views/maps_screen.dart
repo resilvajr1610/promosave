@@ -1,5 +1,6 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 import '../models/error_double_model.dart';
 import '../models/rating_model.dart';
 import '../utils/export.dart';
@@ -24,6 +25,7 @@ class _MapsScreenState extends State<MapsScreen> {
   double rating=0.0;
   List<RatingModel> listRating=[];
   Position? position;
+  int indexClick = 10;
 
   _onMapCreated(GoogleMapController controller){
     _controller.complete(controller);
@@ -171,7 +173,7 @@ class _MapsScreenState extends State<MapsScreen> {
         elevation: 0,
         centerTitle: true,
         backgroundColor: PaletteColor.primaryColor,
-        title: Image.asset('assets/image/logo.png',height: 100,),
+        title: Image.asset('assets/image/logo.png',height: 60,),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -204,22 +206,67 @@ class _MapsScreenState extends State<MapsScreen> {
 
                   if(listRating.length< _allResults.length){
                     _ratingEnterprise(item['idUser'],index);
-                    print('listRating.length $listRating.length ===  _allResults.length ${_allResults.length}');
                   }
+
+                  var status = '-';
+                  final startHours = ErrorStringModel(item,'startHours');
+                  final finishHours = ErrorStringModel(item,'finishHours');
+                  if(startHours!=""){
+                    int  startFormat = int.parse(DateFormat('HH').format(DateTime.parse("2022-06-08 "+startHours+":49.492104").toLocal()));
+                    int  finishFormat = int.parse(DateFormat('HH').format(DateTime.parse("2022-06-08 "+finishHours+":49.492104").toLocal()));
+                    final now= DateTime.now();
+                    int nowFormat = int.parse(DateFormat('HH').format(now));
+                    if(nowFormat>=startFormat && nowFormat<=finishFormat){
+                      status = 'Aberto';
+                    }else{
+                      status = 'Fechado';
+                    }
+                  }
+
+                  Arguments args = Arguments(
+                      idProduct: '',
+                      available: 0,
+                      idEnterprise:ErrorStringModel(item,'idUser'),
+                      banner: ErrorStringModel(item,'urlPhotoBanner'),
+                      enterpriseName: ErrorStringModel(item,'name'),
+                      enterprisePicture: ErrorStringModel(item,'urlPhotoProfile'),
+                      status: status,
+                      startHours: startHours,
+                      finishHours :finishHours,
+                      address: ErrorStringModel(item,'address'),
+                      quantMista: 0,
+                      quantDoce: 0,
+                      quantSalgada: 0,
+                      quantBagDoce: 0,
+                      quantBagMista: 0,
+                      quantBagSalgada: 0,
+                      byPriceSalgada: '',
+                      byPriceDoce: '',
+                      byPriceMista:'',
+                      lat: ErrorDoubleModel(item,'lat'),
+                      lgn: ErrorDoubleModel(item,'lng'),
+                      feesKm: 0.0,
+                      medRating:listRating.isEmpty ||listRating.length != index+1 ?0.0:listRating[index].medRating
+                  );
 
                   return CarrosselProfessionals(
                     onTap: () {
                       setState(() {
-                        _markers.clear();
-                        lat = item['lat'];
-                        lon = item['lng'];
-
-                        _locationProfessional(lat!,lon!);
+                        if(indexClick==index){
+                          Navigator.pushNamed(context, '/products',arguments: args);
+                        }else{
+                          _markers.clear();
+                          lat = item['lat'];
+                          lon = item['lng'];
+                          _locationProfessional(lat!,lon!);
+                          indexClick=index;
+                          print('teste : $indexClick');
+                        }
                       });
                     },
                     name: ErrorStringModel(item,'name'),
-                    urlBanner: ErrorStringModel(item,'urlPhotoBanner'),
-                    urlLogo: ErrorStringModel(item,'urlPhotoProfile'),
+                    urlBanner: ErrorStringModel(item,'urlPhotoBanner')==''?TextConst.PRODUCTSTANDARD:ErrorStringModel(item,'urlPhotoBanner'),
+                    urlLogo: ErrorStringModel(item,'urlPhotoProfile')==''?TextConst.PRODUCTSTANDARD:ErrorStringModel(item,'urlPhotoProfile'),
                     rating: listRating.isEmpty?0.0:listRating[index].medRating,
                   );
                 },

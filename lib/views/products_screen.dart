@@ -236,7 +236,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     backgroundImage: NetworkImage(
                         widget.args.enterprisePicture != ""
                             ? widget.args.enterprisePicture
-                            : TextConst.LOGO),
+                            : TextConst.PRODUCTSTANDARD),
                   ),
                 ),
                 Container(
@@ -441,7 +441,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                 byPrice: byPrice,
                                 inPrice: inPrice,
                                 description: description,
-                                photoUrl: photoUrl,
+                                photoUrl: photoUrl!=''?photoUrl:TextConst.PRODUCTSTANDARD,
                                 product: product,
                               );
                             });

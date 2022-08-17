@@ -186,7 +186,7 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 0,
         centerTitle: true,
         backgroundColor: PaletteColor.primaryColor,
-        title: Image.asset('assets/image/logo.png',height: 100,),
+        title: Image.asset('assets/image/logo.png',height: 60,),
       ),
       body: SingleChildScrollView(
         child: Container(

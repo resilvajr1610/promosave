@@ -153,7 +153,7 @@ class _RequestsScreenState extends State<RequestsScreen> {
         backgroundColor: PaletteColor.primaryColor,
         title: Image.asset(
           'assets/image/logo.png',
-          height: 100,
+          height: 60,
         ),
       ),
       body: Container(

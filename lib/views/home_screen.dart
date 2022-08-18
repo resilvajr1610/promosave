@@ -2,10 +2,8 @@ import 'package:intl/intl.dart';
 import 'package:promosave/models/error_double_model.dart';
 import 'package:promosave/models/error_list_model.dart';
 import 'package:promosave/models/favorites_model.dart';
-import 'package:promosave/models/produts_model.dart';
 import 'package:promosave/models/rating_model.dart';
 import 'package:provider/provider.dart';
-import '../models/notification_model.dart';
 import '../service/app_settings.dart';
 import '../utils/export.dart';
 
@@ -38,6 +36,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     var data = await db.collection("enterprise")
         .where('type', isEqualTo: TextConst.ENTERPRISE)
+        .where('status',isEqualTo: TextConst.APPROVED)
+        .where('products',isNotEqualTo: 0)
+        .where('products',isNotEqualTo: null)
         .get();
     setState(() {
       _allResults = data.docs;
@@ -111,15 +112,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 showFavorites: show
             )
         );
-      }else{
-        listFavorites.insert(index,
-            FavoritesModel(
-                showFavorites: show
-            )
-        );
+        setState(() {
+          listFavorites[index].showFavorites;
+        });
       }
     }
-    _data();
     if(listFavorites.length==_allResults.length){
       setState(() {
         isLoading=false;
@@ -295,7 +292,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     TextButton(
                         onPressed: ()=>setState(() {
-                          _data();
                           newStatus = 'Todos';
                           showFav = false;
                           isLoading=true;
@@ -303,7 +299,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: TextCustom(text: 'Todos',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal,textAlign: TextAlign.center,)),
                     TextButton(
                         onPressed: ()=>setState(() {
-                          _data();
                           newStatus = 'Fechado';
                           showFav = false;
                           isLoading=true;
@@ -311,7 +306,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: TextCustom(text: 'Aberto',size: 14.0,color: PaletteColor.primaryColor,fontWeight: FontWeight.normal,textAlign: TextAlign.center)),
                     TextButton(
                         onPressed: ()=>setState((){
-                          _data();
                           newStatus = 'Todos';
                           showFav = true;
                           isLoading=true;
@@ -344,7 +338,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                 String idEnterprise = ErrorStringModel(item,'idUser');
                                 String name = ErrorStringModel(item,'name');
-                                int products = ErrorListNumber(item,'products');
                                 final urlPhotoProfile = ErrorStringModel(item,'urlPhotoProfile');
                                 final urlPhotoBanner = ErrorStringModel(item,'urlPhotoBanner');
                                 final startHours = ErrorStringModel(item,'startHours');
@@ -360,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 if(startHours!=""){
                                   int  startFormat = int.parse(DateFormat('HH').format(DateTime.parse("2022-06-08 "+startHours+":49.492104").toLocal()));
                                   int  finishFormat = int.parse(DateFormat('HH').format(DateTime.parse("2022-06-08 "+finishHours+":49.492104").toLocal()));
-                                  if(nowFormat>=startFormat && nowFormat<=finishFormat){
+                                  if(nowFormat>=startFormat && nowFormat<finishFormat){
                                     status = 'Aberto';
                                   }else{
                                     status = 'Fechado';
@@ -395,12 +388,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                   medRating:listRating.isEmpty ||listRating.length != index+1 ?0.0:listRating[index].medRating
                                 );
 
+                                listFavorites.add(
+                                    FavoritesModel(
+                                        showFavorites: false
+                                    )
+                                );
+
                                 if(listFavorites.length< _allResults.length){
                                   checkEnterprise(idEnterprise,index);
                                   _ratingEnterprise(idEnterprise,index);
                                 }
 
-                                if(products>0 && status != newStatus && (city == valueCity || valueCity =='Todos')){
+                                if(status != newStatus && (city == valueCity || valueCity =='Todos')){
                                     if(showFav){
                                       if(listFavorites[index].showFavorites){
                                         return CardHome(
@@ -411,14 +410,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   'favorites': listFavorites[index].showFavorites?
                                                   FieldValue.arrayRemove([FirebaseAuth.instance.currentUser!.uid]):
                                                   FieldValue.arrayUnion([FirebaseAuth.instance.currentUser!.uid])
-                                                });
-                                            setState(() {
-                                              listFavorites[index].showFavorites?
-                                              listFavorites[index].showFavorites=false:
-                                              listFavorites[index].showFavorites=true;
-                                            });
+                                                }).then((value) => Navigator.pushReplacementNamed(context, '/navigation'));
                                           },
-                                          favorite: listFavorites[index].showFavorites,
+                                          favorite: listFavorites.length != index+1?listFavorites[index].showFavorites:false,
                                           urlPhotoProfile: urlPhotoProfile,
                                           urlPhotoBanner: urlPhotoBanner,
                                           startHours: startHours,
@@ -431,7 +425,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         return Container();
                                       }
                                     }else{
-                                      return listFavorites.length!=index?CardHome(
+                                      return CardHome(
                                         rating: listRating.length!=index+1?0.0:listRating[index].medRating,
                                         onTap: ()=>Navigator.pushNamed(context, '/products',arguments: args),
                                         onTapFavorite: (){
@@ -440,22 +434,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 'favorites': listFavorites[index].showFavorites?
                                                 FieldValue.arrayRemove([FirebaseAuth.instance.currentUser!.uid]):
                                                 FieldValue.arrayUnion([FirebaseAuth.instance.currentUser!.uid])
-                                              });
-                                          setState(() {
-                                            listFavorites[index].showFavorites?
-                                            listFavorites[index].showFavorites=false:
-                                            listFavorites[index].showFavorites=true;
-                                            sendNotification('teste fav','fav body','${TextConst.TOKENTESTE}');
-                                          });
+                                              }).then((value) => Navigator.pushReplacementNamed(context, '/navigation'));
                                         },
-                                        favorite: listFavorites.length != index+1?false:listFavorites[index].showFavorites,
+                                        favorite: mounted?listFavorites[index].showFavorites:false,
                                         urlPhotoProfile: urlPhotoProfile,
                                         urlPhotoBanner: urlPhotoBanner,
                                         startHours: startHours,
                                         finishHours: finishHours,
                                         name: name.toUpperCase(),
                                         status: status,
-                                      ):Container();
+                                      );
                                     }
                                 }else{
                                   return Container();

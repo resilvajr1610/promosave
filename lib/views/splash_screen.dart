@@ -23,7 +23,6 @@ class _SplashScreenState extends State<SplashScreen> {
   readAcess(){
     start = context.watch<AppSettings>().acess;
     setState(() {});
-    print('teste : $start');
   }
 
   storeNotificationToken()async{
@@ -32,7 +31,6 @@ class _SplashScreenState extends State<SplashScreen> {
       .set({
         'token' : token
       },SetOptions(merge: true));
-    print('token : $token');
   }
 
   _mockCheckForSession()async{
@@ -74,8 +72,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   verificarion()async{
-
-    print('acess : $start');
     await Future.delayed(Duration(seconds: 3),(){
       if(start==''){
           Navigator.of(context).pushReplacement(

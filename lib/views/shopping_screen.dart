@@ -1,5 +1,7 @@
+import 'package:google_place/google_place.dart';
 import 'package:mercado_pago_mobile_checkout/mercado_pago_mobile_checkout.dart';
 import 'package:http/http.dart' as http;
+import '../models/error_double_model.dart';
 import '../models/notification_model.dart';
 import '../models/shopping_model.dart';
 import '../utils/export.dart';
@@ -281,6 +283,16 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
     isLoading=true;
   }
 
+  _showDialog() {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return MyDialogShopping(idEnterprise: widget.args.idEnterprise);
+        });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -326,26 +338,41 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
               scaleY: 0.7,
               child: CircularProgressIndicator(color: Colors.white,)
           )
-      ):BottomSheetCustom(
-        text: 'Pagamento',
-        sizeIcon: 0.0,
-        onTap: ()async{
-          // PaymentResult result = await MercadoPagoMobileCheckout.startCheckout(
-          //   _publicKey,
-          //   _idPagamento,
-          // );
-          // if(result.status == "approved"){
-            _getOrder();
-            if(token!=''){
-              sendNotification('Novo Pedido!','Cliente ${FirebaseAuth.instance.currentUser!.displayName}',token);
-            }
-          // }
-        },
+      ):Container(
+        color: Colors.white.withOpacity(0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ButtonCustom(onPressed: ()=>_showDialog(),
+                customWidth: 1.0,
+                text: 'Adicionar Endereço',
+                size: 20.0,
+                colorBorder: Colors.white.withOpacity(1),
+                colorButton: Colors.white.withOpacity(1),
+                colorText: PaletteColor.primaryColor),
+            BottomSheetCustom(
+              text: 'Pagamento',
+              sizeIcon: 0.0,
+              onTap: ()async{
+                PaymentResult result = await MercadoPagoMobileCheckout.startCheckout(
+                  _publicKey,
+                  _idPagamento,
+                );
+                if(result.status == "approved"){
+                  _getOrder();
+                  if(token!=''){
+                    sendNotification('Novo Pedido!','Cliente ${FirebaseAuth.instance.currentUser!.displayName}',token);
+                  }
+                }
+              },
+            ),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         child: Container(
           width: width,
-          height: height*1.05,
+          height: height*1.1,
           child: Column(
             children: [
               Container(
@@ -377,11 +404,11 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                     padding: const EdgeInsets.all(16),
                     child: CircleAvatar(
                       radius: 30,
-                      backgroundColor: PaletteColor.primaryColor,
+                      backgroundColor: PaletteColor.greyLight,
                       backgroundImage: NetworkImage(
                           widget.args.enterprisePicture != ""
                               ? widget.args.enterprisePicture
-                              : TextConst.LOGO),
+                              : TextConst.PRODUCTSTANDARD),
                     ),
                   ),
                   Container(
@@ -685,6 +712,302 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
               ):Container(),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class MyDialogShopping extends StatefulWidget {
+
+  final String idEnterprise;
+
+  MyDialogShopping({required this.idEnterprise});
+
+  @override
+  _MyDialogShoppingState createState() => new _MyDialogShoppingState();
+}
+
+class _MyDialogShoppingState extends State<MyDialogShopping> {
+
+  var _controllerAddress = TextEditingController();
+  String addressHome = "";
+  String addressWork = "";
+  String addressOther = "";
+  String city = "";
+  String village = "";
+  String street = "";
+  late GooglePlace googlePlace;
+  List<AutocompletePrediction> predictions = [];
+  String apikey = 'AIzaSyBrOfzJKgCwsbPxmc9cSQ6DptcQvluZQFQ';
+  var result;
+  Timer? _debounce;
+  DetailsResult? startPosition;
+  late FocusNode? startFocusNode;
+  double lat = 0.0;
+  double lng = 0.0;
+  List titleRadio=['Casa','Trabalho','Outro'];
+  int selectedRadioButton=0;
+  String selectedText='home';
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  FirebaseFirestore db = FirebaseFirestore.instance;
+
+  void autoCompleteSearch(String value) async {
+    result = await googlePlace.autocomplete.get(value);
+    if (result != null && result.predictions != null && mounted) {
+      setState(() {
+        predictions = result.predictions!;
+      });
+    }
+  }
+
+  _verification(){
+
+    if(_controllerAddress.text.isNotEmpty){
+
+      _saveData();
+
+    }else{
+      setState(() {
+        showSnackBar(context, 'verifique seu endereço', _scaffoldKey);
+      });
+    }
+  }
+
+  _saveData(){
+    db.collection("user").doc(FirebaseAuth.instance.currentUser!.uid).update({
+
+      "${selectedText}Address":_controllerAddress.text,
+      "${selectedText}Street" :street,
+      "${selectedText}Village":village,
+      "${selectedText}City"   :city,
+      "${selectedText}Lat"    :lat,
+      "${selectedText}Lng"    :lng,
+
+    }).then((_)async{
+      var data = await db.collection("enterprise")
+          .doc(widget.idEnterprise)
+          .get();
+      DocumentSnapshot item = data;
+      Arguments args = Arguments(
+          idProduct: '',
+          available: 0,
+          idEnterprise:ErrorStringModel(item,'idUser'),
+          banner: ErrorStringModel(item,'urlPhotoBanner'),
+          enterpriseName: ErrorStringModel(item,'name'),
+          enterprisePicture: ErrorStringModel(item,'urlPhotoProfile'),
+          status: '-',
+          startHours: '-',
+          finishHours :'-',
+          address: ErrorStringModel(item,'address'),
+          quantMista: 0,
+          quantDoce: 0,
+          quantSalgada: 0,
+          quantBagDoce: 0,
+          quantBagMista: 0,
+          quantBagSalgada: 0,
+          byPriceSalgada: '',
+          byPriceDoce: '',
+          byPriceMista:'',
+          lat: ErrorDoubleModel(item,'lat'),
+          lgn: ErrorDoubleModel(item,'lng'),
+          feesKm: 0.0,
+          medRating:0.0
+      );
+      Navigator.pushNamed(context, '/products',arguments: args);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    googlePlace = GooglePlace(apikey);
+    startFocusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    startFocusNode?.dispose();
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+
+    setSelectedRadio(int value){
+      setState(() {
+        selectedRadioButton = value;
+        if(value == 0){
+          selectedText = 'home';
+        }else if (value == 1){
+          selectedText = 'work';
+        }else{
+          selectedText = 'other';
+        }
+        print(selectedText);
+      });
+    }
+
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      key: _scaffoldKey,
+      body: SingleChildScrollView(
+        child: AlertDialog(
+          title: Center(
+            child: TextCustom(
+              text: 'Adicionar novo endereço',
+              size: 13.0,
+              color: PaletteColor.grey,
+              fontWeight: FontWeight.bold,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          titleTextStyle: TextStyle(color: PaletteColor.grey, fontSize: 14),
+          content: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        height: 120,
+                        width: width,
+                        child: ListView.builder(
+                            itemCount:titleRadio.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Container(
+                                height: 35,
+                                width: 140,
+                                child: RadioListTile(
+                                  contentPadding: EdgeInsets.all(0),
+                                  value: index,
+                                  groupValue: selectedRadioButton,
+                                  activeColor: PaletteColor.primaryColor,
+                                  title: Container(
+                                      height: 20,
+                                      margin: const EdgeInsets.only(top: 15.0),
+                                      child: TextCustom(text: titleRadio[index],color: PaletteColor.grey,size: 14.0,fontWeight: FontWeight.normal,textAlign: TextAlign.start)
+                                  ),
+                                  subtitle: Text(''),
+                                  onChanged: (value){
+                                    setSelectedRadio(int.parse(value.toString()));
+                                  },
+                                ),
+                              );
+                            }
+                        ),
+                      ),
+                      Container(
+                        alignment: Alignment.topCenter,
+                        width: width * 0.9,
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                            color: PaletteColor.greyLight,
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(
+                              color: PaletteColor.greyLight,
+                            )),
+                        child: TextFormField(
+                          controller: _controllerAddress,
+                          focusNode: startFocusNode,
+                          textAlign: TextAlign.start,
+                          keyboardType: TextInputType.text,
+                          textAlignVertical: TextAlignVertical.center,
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontSize: 14.0,
+                          ),
+                          onChanged: (value) {
+                            if (value.isNotEmpty) {
+                              autoCompleteSearch(value);
+                            }
+                          },
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Rua, Avenida, etc',
+                            hintStyle: TextStyle(
+                              color: Colors.black54,
+                              fontSize: 14.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                      ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: predictions.length,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              leading: Icon(
+                                Icons.location_on,
+                                color: PaletteColor.primaryColor,
+                              ),
+                              title:
+                              Text(predictions[index].description.toString()),
+                              onTap: () async {
+                                final placeId = predictions[index].placeId;
+                                final details =
+                                await googlePlace.details.get(placeId!);
+                                if (details != null &&
+                                    details.result != null &&
+                                    mounted) {
+                                  setState(() {
+                                    startPosition = details.result;
+                                    _controllerAddress.text = details.result!.name!;
+                                    lat = startPosition!.geometry!.location!.lat!;
+                                    lng = startPosition!.geometry!.location!.lng!;
+                                    final completeAddress =
+                                    startPosition!.adrAddress!;
+                                    final splittedStart =
+                                    completeAddress.split('>');
+                                    street =
+                                        splittedStart[1].replaceAll('</span', '');
+                                    village =
+                                        splittedStart[3].replaceAll('</span', '');
+                                    city =
+                                        splittedStart[5].replaceAll('</span', '');
+
+                                    print("Street :     " + street.toString());
+                                    print("village :  " + village);
+                                    print("city :    " + city);
+                                    predictions = [];
+                                  });
+                                }
+                              },
+                            );
+                          }),
+                    ]);
+              }),
+          contentPadding: EdgeInsets.symmetric(horizontal: 5, vertical: 0),
+          actionsAlignment: MainAxisAlignment.center,
+          titlePadding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+          actions: [
+            Container(
+              width: width * 0.3,
+              child: ButtonCustom(
+                text: 'Salvar',
+                colorText: PaletteColor.white,
+                colorBorder: PaletteColor.primaryColor,
+                onPressed: ()=>_verification(),
+                size: 14.0,
+                colorButton: PaletteColor.primaryColor,
+              ),
+            ),
+            Container(
+              width: width * 0.3,
+              child: ButtonCustom(
+                text: 'Cancelar',
+                colorText: PaletteColor.white,
+                colorBorder: PaletteColor.greyInput,
+                onPressed: () => Navigator.pop(context),
+                size: 14.0,
+                colorButton: PaletteColor.greyInput,
+              ),
+            ),
+          ],
         ),
       ),
     );

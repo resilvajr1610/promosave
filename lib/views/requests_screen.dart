@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
-import 'package:promosave/models/alert_model.dart';
-import 'package:promosave/models/error_double_model.dart';
-import 'package:promosave/widgets/container_requests_client.dart';
+import 'package:promosavecliente/models/alert_model.dart';
+import '../models/error_double_model.dart';
 import '../models/requests_model.dart';
 import '../utils/export.dart';
+import '../widgets/container_requests_client.dart';
 import '../widgets/showDialogRating.dart';
 
 class RequestsScreen extends StatefulWidget {

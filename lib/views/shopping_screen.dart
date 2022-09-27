@@ -223,7 +223,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                 }
               ],
               "payer": {
-                "email": "promosave@promosave.com"
+                "email": "promosavecliente@promosavecliente.com"
               }
             }
         )

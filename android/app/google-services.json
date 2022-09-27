@@ -7,9 +7,38 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:296025858394:android:84289c8937ec8d812c9363",
+        "mobilesdk_app_id": "1:296025858394:android:f12dca1dd67d37642c9363",
         "android_client_info": {
-          "package_name": "com.example.promosave"
+          "package_name": "com.promosave.empresa.promosave_empresa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "296025858394-jja6432lnlfhk1eg3vi93648ndu313tu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAekG-AncLofQTiOlM3u7YiSGs22iwkx9k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "296025858394-jja6432lnlfhk1eg3vi93648ndu313tu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:296025858394:android:618862ee0588376a2c9363",
+        "android_client_info": {
+          "package_name": "com.promosave.promosavecliente"
         }
       },
       "oauth_client": [

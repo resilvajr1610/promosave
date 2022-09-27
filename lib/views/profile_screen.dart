@@ -1,5 +1,5 @@
 import 'package:google_place/google_place.dart';
-import 'package:promosave/models/shopping_model.dart';
+import 'package:promosavecliente/models/shopping_model.dart';
 import '../models/alert_model.dart';
 import '../models/error_double_model.dart';
 import '../utils/export.dart';

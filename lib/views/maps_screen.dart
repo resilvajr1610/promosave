@@ -113,8 +113,6 @@ class _MapsScreenState extends State<MapsScreen> {
             medRating: rating
         )
     );
-
-    print(listRating[index].medRating);
   }
 
   Future<Position> _determinePosition() async {
@@ -164,7 +162,7 @@ class _MapsScreenState extends State<MapsScreen> {
 
     return Scaffold(
       drawer: DrawerCustom(
-        enterprise: FirebaseAuth.instance.currentUser!.displayName!,
+        enterprise: '',
         photo: FirebaseAuth.instance.currentUser!.photoURL,
         showLower: true,
       ),

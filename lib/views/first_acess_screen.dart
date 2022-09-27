@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:promosave/models/shopping_model.dart';
+import 'package:promosavecliente/models/shopping_model.dart';
 import 'package:provider/provider.dart';
 
 import '../service/app_settings.dart';

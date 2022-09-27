@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:promosave/models/shopping_model.dart';
+
+import '../Utils/text_const.dart';
 
 sendNotification(String title,String body,String token)async{
   final data = {

@@ -1,6 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:promosave/service/app_settings.dart';
-import 'package:promosave/service/local_push_notitication.dart';
+import 'package:promosavecliente/service/app_settings.dart';
+import 'package:promosavecliente/service/local_push_notitication.dart';
 import 'package:provider/provider.dart';
 import '../utils/export.dart';
 

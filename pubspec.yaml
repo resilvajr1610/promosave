@@ -1,4 +1,4 @@
-name: promosave
+name: promosavecliente
 description: A new Flutter project.
 publish_to: 'none'
 
@@ -14,7 +14,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   firebase_core: ^1.1.0
   firebase_auth: ^3.0.1
-  cloud_firestore: ^2.4.0
+  cloud_firestore: ^3.4.9
   firebase_storage: ^10.0.1
   brasil_fields: ^1.4.4
   smooth_star_rating_nsafe: ^1.0.0+1
@@ -24,11 +24,11 @@ dependencies:
   auto_size_text: ^3.0.0
   font_awesome_flutter: ^10.1.0
   google_maps_flutter: ^2.1.4
-  geolocator: ^8.2.1
+  geolocator: ^9.0.2
   url_launcher: ^6.0.15
-  permission_handler: ^8.1.4+2
+  permission_handler: ^10.0.2
   mercado_pago_mobile_checkout: ^0.1.0
-  flutter_local_notifications: ^9.7.0
+  flutter_local_notifications: ^11.0.1
   firebase_messaging:
   http:
   shared_preferences: ^2.0.15
@@ -38,7 +38,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^1.0.0
+  flutter_lints: ^2.0.1
 
 flutter:
 

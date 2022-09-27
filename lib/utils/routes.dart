@@ -1,4 +1,4 @@
-import 'package:promosave/views/who_we_are_screen.dart';
+import 'package:promosavecliente/views/who_we_are_screen.dart';
 
 import '../utils/export.dart';
 

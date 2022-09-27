@@ -1,4 +1,4 @@
-package com.example.promosave
+package com.promosave.promosavecliente
 
 import io.flutter.embedding.android.FlutterActivity
 

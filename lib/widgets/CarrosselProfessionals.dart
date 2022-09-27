@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:promosave/models/shopping_model.dart';
+import 'package:promosavecliente/models/shopping_model.dart';
 import '../utils/export.dart';
 
 class CarrosselProfessionals extends StatelessWidget {
